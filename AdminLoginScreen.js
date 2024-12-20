@@ -8,7 +8,8 @@ import {
   Alert,
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from "./firebase"; // Firestore bağlantısı kontrol edin
 
 const AdminLoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
@@ -16,13 +17,24 @@ const AdminLoginScreen = ({ navigation }) => {
 
   const handleAdminLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      // Kullanıcı girişi yap
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const uid = userCredential.user.uid; // Giriş yapan kullanıcının UID'sini al
 
-      // Eğer giriş başarılıysa, admin paneline yönlendirebiliriz
-      Alert.alert("Başarılı", "Admin olarak giriş yaptınız!");
-      navigation.navigate("AdminDashboard"); // Admin paneline yönlendirme (admin ekranı eklemeniz gerekebilir)
+      // Kullanıcı rolünü Firestore'dan kontrol et
+      const docRef = doc(db, "roles", uid); // UID ile "roles" koleksiyonundan belge al
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists() && docSnap.data().role === "admin") {
+        // Admin rolüne sahipse admin paneline yönlendir
+        Alert.alert("Başarılı", "Admin olarak giriş yaptınız!");
+        navigation.navigate("AdminDashboard"); // Admin paneline yönlendirme
+      } else {
+        // Admin rolüne sahip değilse hata göster
+        Alert.alert("Hata", "Bu kullanıcı admin yetkisine sahip değil!");
+      }
     } catch (error) {
-      console.error("Hata:", error);
+      console.error("Admin giriş hatası:", error);
       Alert.alert("Hata", "Giriş başarısız! E-posta veya şifre yanlış.");
     }
   };
