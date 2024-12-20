@@ -1,4 +1,3 @@
-// LoginScreen.js
 import React, { useState } from "react";
 import {
   View,
@@ -8,17 +7,17 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "./firebase";
 
 const LoginScreen = () => {
   const [tc, setTc] = useState("");
   const [password, setPassword] = useState("");
+  const [isRegistering, setIsRegistering] = useState(false); // Kayıt yapılıp yapılmadığını kontrol eden durum
 
   const handleLogin = async () => {
     try {
-      // TC kimlik numarasını email formatına çeviriyoruz
-      const email = `${tc}@elab.com`;
+      const email = `${tc}@elab.com`; // TC kimlik numarasını email formatına çeviriyoruz
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert("Başarılı", "Giriş başarılı!");
     } catch (error) {
@@ -27,9 +26,21 @@ const LoginScreen = () => {
     }
   };
 
+  const handleRegister = async () => {
+    try {
+      const email = `${tc}@elab.com`; // TC kimlik numarasını email formatına çeviriyoruz
+      await createUserWithEmailAndPassword(auth, email, password);
+      Alert.alert("Başarılı", "Kayıt başarılı!");
+      setIsRegistering(false); // Kayıt işlemi sonrası giriş ekranına dön
+    } catch (error) {
+      console.error("Hata:", error);
+      Alert.alert("Hata", "Kayıt başarısız! Lütfen bilgilerinizi kontrol edin.");
+    }
+  };
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>E-Laboratuvar Giriş</Text>
+      <Text style={styles.title}>{isRegistering ? "E-Laboratuvar Kayıt" : "E-Laboratuvar Giriş"}</Text>
       <TextInput
         style={styles.input}
         placeholder="TC Kimlik Numarası"
@@ -44,8 +55,16 @@ const LoginScreen = () => {
         value={password}
         onChangeText={setPassword}
       />
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
-        <Text style={styles.buttonText}>Giriş Yap</Text>
+      <TouchableOpacity style={styles.button} onPress={isRegistering ? handleRegister : handleLogin}>
+        <Text style={styles.buttonText}>{isRegistering ? "Kayıt Ol" : "Giriş Yap"}</Text>
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.switchButton}
+        onPress={() => setIsRegistering(!isRegistering)} // Kayıt ve giriş ekranı arasında geçiş yapar
+      >
+        <Text style={styles.switchButtonText}>
+          {isRegistering ? "Zaten bir hesabınız var mı? Giriş yapın." : "Hesabınız yok mu? Kayıt olun."}
+        </Text>
       </TouchableOpacity>
     </View>
   );
@@ -85,6 +104,13 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  switchButton: {
+    marginTop: 10,
+  },
+  switchButtonText: {
+    color: "#6200ee",
+    fontSize: 16,
   },
 });
 
