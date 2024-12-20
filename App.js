@@ -4,6 +4,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AdminLoginScreen from "./AdminLoginScreen";
 import UserLoginScreen from "./UserLoginScreen";
+import AdminDashboard from "./AdminDashboard";
 
 const Stack = createStackNavigator();
 
@@ -44,6 +45,11 @@ const App = () => {
         <Stack.Screen
           name="UserLogin"
           component={UserLoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="AdminDashboard"
+          component={AdminDashboard}
           options={{ headerShown: false }}
         />
       </Stack.Navigator>
