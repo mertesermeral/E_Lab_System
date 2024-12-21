@@ -7,7 +7,7 @@ const AdminDashboard = ({ navigation }) => {
       <Text style={styles.title}>Admin Dashboard</Text>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("GuideCreation")}
+        onPress={() => navigation.navigate("Kilavuz")}
       >
         <Text style={styles.buttonText}>Kılavuz Oluşturma</Text>
       </TouchableOpacity>

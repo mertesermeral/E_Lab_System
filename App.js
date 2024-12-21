@@ -5,6 +5,7 @@ import { createStackNavigator } from "@react-navigation/stack";
 import AdminLoginScreen from "./AdminLoginScreen";
 import UserLoginScreen from "./UserLoginScreen";
 import AdminDashboard from "./AdminDashboard";
+import Kilavuz from "./Kilavuz"; 
 
 const Stack = createStackNavigator();
 
@@ -51,6 +52,11 @@ const App = () => {
           name="AdminDashboard"
           component={AdminDashboard}
           options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="Kilavuz"
+          component={Kilavuz} // GuideCreation'ı ekledik
+          options={{ headerShown: true, title: "Kılavuz Oluştur" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
