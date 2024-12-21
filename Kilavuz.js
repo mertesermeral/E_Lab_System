@@ -1,38 +1,56 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  StyleSheet,
-  Alert,
-} from "react-native";
-import { collection, addDoc } from "firebase/firestore";
+import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert } from "react-native";
 import { db } from "./firebase";
+import { doc, setDoc } from "firebase/firestore";
 
-const Kilavuz = ({ navigation }) => {
-  const [ageRange, setAgeRange] = useState("");
-  const [IgALow, setIgALow] = useState("");
-  const [IgAHigh, setIgAHigh] = useState("");
+const Kilavuz = () => {
+  const [guideName, setGuideName] = useState("");
+  const [rows, setRows] = useState([]);
 
-  const handleCreateGuide = async () => {
-    if (!ageRange || !IgALow || !IgAHigh) {
-      Alert.alert("Hata", "Tüm alanları doldurun!");
+  const handleInputChange = (index, name, value) => {
+    const newRows = [...rows];
+    newRows[index][name] = value;
+    setRows(newRows);
+  };
+
+  const addRow = () => {
+    setRows([
+      ...rows,
+      { id: rows.length + 1, ageRange: "", geoMean: "", mean: "", min: "", max: "", interval: "" },
+    ]);
+  };
+
+  const deleteRow = (id) => {
+    setRows(rows.filter((row) => row.id !== id));
+  };
+
+  const handleSave = async () => {
+    if (!guideName) {
+      Alert.alert("Uyarı", "Lütfen bir kılavuz adı girin!");
+      return;
+    }
+    if (rows.length === 0) {
+      Alert.alert("Uyarı", "Lütfen en az bir satır ekleyin!");
       return;
     }
 
+    const formattedRows = rows.map((row) => ({
+      ageRange: row.ageRange,
+      geoMeanMin: parseFloat(row.geoMean) - parseFloat(row.interval),
+      geoMeanMax: parseFloat(row.geoMean) + parseFloat(row.interval),
+      mean: parseFloat(row.mean),
+      min: parseFloat(row.min),
+      max: parseFloat(row.max),
+    }));
+
     try {
-      await addDoc(collection(db, "guides"), {
-        ageRange,
-        testLimits: {
-          IgA: { low: parseFloat(IgALow), high: parseFloat(IgAHigh) },
-        },
-      });
+      await setDoc(doc(db, "guides", guideName), { data: formattedRows });
       Alert.alert("Başarılı", "Kılavuz başarıyla oluşturuldu!");
-      navigation.goBack(); // Admin Dashboard'a geri dön
+      setGuideName("");
+      setRows([]);
     } catch (error) {
-      console.error("Kılavuz oluşturma hatası:", error);
-      Alert.alert("Hata", "Kılavuz oluşturulamadı.");
+      console.error("Veri kaydedilemedi: ", error);
+      Alert.alert("Hata", "Kılavuz oluşturulurken bir hata oluştu!");
     }
   };
 
@@ -41,27 +59,62 @@ const Kilavuz = ({ navigation }) => {
       <Text style={styles.title}>Kılavuz Oluştur</Text>
       <TextInput
         style={styles.input}
-        placeholder="Yaş Aralığı (örn: 18-25)"
-        value={ageRange}
-        onChangeText={setAgeRange}
+        placeholder="Kılavuz Adı"
+        value={guideName}
+        onChangeText={setGuideName}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="IgA Düşük Limit"
-        value={IgALow}
-        onChangeText={setIgALow}
-        keyboardType="numeric"
+      <FlatList
+        data={rows}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item, index }) => (
+          <View style={styles.row}>
+            <TextInput
+              style={styles.input}
+              placeholder="Yaş Aralığı (ay)"
+              value={item.ageRange}
+              onChangeText={(value) => handleInputChange(index, "ageRange", value)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Geometric Mean"
+              keyboardType="numeric"
+              value={item.geoMean}
+              onChangeText={(value) => handleInputChange(index, "geoMean", value)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Mean"
+              keyboardType="numeric"
+              value={item.mean}
+              onChangeText={(value) => handleInputChange(index, "mean", value)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Min"
+              keyboardType="numeric"
+              value={item.min}
+              onChangeText={(value) => handleInputChange(index, "min", value)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Max"
+              keyboardType="numeric"
+              value={item.max}
+              onChangeText={(value) => handleInputChange(index, "max", value)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="Interval (SD)"
+              keyboardType="numeric"
+              value={item.interval}
+              onChangeText={(value) => handleInputChange(index, "interval", value)}
+            />
+            <Button title="Sil" color="red" onPress={() => deleteRow(item.id)} />
+          </View>
+        )}
       />
-      <TextInput
-        style={styles.input}
-        placeholder="IgA Yüksek Limit"
-        value={IgAHigh}
-        onChangeText={setIgAHigh}
-        keyboardType="numeric"
-      />
-      <TouchableOpacity style={styles.button} onPress={handleCreateGuide}>
-        <Text style={styles.buttonText}>Oluştur</Text>
-      </TouchableOpacity>
+      <Button title="Satır Ekle" onPress={addRow} />
+      <Button title="Kılavuz Oluştur" onPress={handleSave} />
     </View>
   );
 };
@@ -69,38 +122,26 @@ const Kilavuz = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "#f5f5f5",
     padding: 20,
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 20,
+    textAlign: "center",
   },
   input: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
     borderWidth: 1,
     borderColor: "#ccc",
-  },
-  button: {
-    width: "100%",
-    height: 50,
-    backgroundColor: "#6200ee",
     borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
+    padding: 10,
+    marginBottom: 10,
+    width: "100%",
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+  row: {
+    flexDirection: "column",
+    marginBottom: 15,
   },
 });
 
