@@ -8,7 +8,7 @@ import {
   Alert,
 } from "react-native";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from "./firebase";
+import { auth } from "../firebase";
 
 const LoginScreen = () => {
   const [tc, setTc] = useState("");

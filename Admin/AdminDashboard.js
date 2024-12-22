@@ -13,7 +13,7 @@ const AdminDashboard = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("Kilavuz")}
+        onPress={() => navigation.navigate("KilavuzList")}
       >
         <Text style={styles.buttonText}>Kılavuz Listeleme</Text>
       </TouchableOpacity>

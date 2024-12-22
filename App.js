@@ -2,10 +2,12 @@ import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
-import AdminLoginScreen from "./AdminLoginScreen";
-import UserLoginScreen from "./UserLoginScreen";
-import AdminDashboard from "./AdminDashboard";
-import Kilavuz from "./Kilavuz"; 
+import AdminLoginScreen from "./Login/AdminLoginScreen";
+import UserLoginScreen from "./Login/UserLoginScreen";
+import AdminDashboard from "./Admin/AdminDashboard";
+import Kilavuz from "./Admin/Kilavuz"; 
+import KilavuzList from "./Admin/KilavuzList"; 
+import KilavuzTablosu from "./Admin/KilavuzTablosu"; 
 
 const Stack = createStackNavigator();
 
@@ -58,6 +60,17 @@ const App = () => {
           component={Kilavuz} // GuideCreation'ı ekledik
           options={{ headerShown: true, title: "Kılavuz Oluştur" }}
         />
+        <Stack.Screen
+          name="KilavuzList"
+          component={KilavuzList}
+          options={{ title: "Kılavuzlar" }}
+        />
+        <Stack.Screen
+          name="KilavuzTablosu"
+          component={KilavuzTablosu}
+          options={{ title: "Kılavuz Tablosu" }}
+        />
+
       </Stack.Navigator>
     </NavigationContainer>
   );

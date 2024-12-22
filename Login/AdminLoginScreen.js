@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "./firebase"; // Firestore bağlantısı kontrol edin
+import { auth, db } from "../firebase"; // Firestore bağlantısı kontrol edin
 
 const AdminLoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");

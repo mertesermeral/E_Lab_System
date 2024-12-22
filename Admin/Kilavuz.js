@@ -9,7 +9,7 @@ import {
   Alert,
 } from "react-native";
 import { Picker } from "@react-native-picker/picker"; // Picker bileşeni
-import { db } from "./firebase";
+import { db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 
 const Kilavuz = () => {
