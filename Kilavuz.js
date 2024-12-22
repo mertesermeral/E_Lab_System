@@ -1,5 +1,14 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  FlatList,
+  StyleSheet,
+  Alert,
+} from "react-native";
+import { Picker } from "@react-native-picker/picker"; // Picker bileşeni
 import { db } from "./firebase";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -16,7 +25,21 @@ const Kilavuz = () => {
   const addRow = () => {
     setRows([
       ...rows,
-      { id: rows.length + 1, ageRange: "", geoMean: "", mean: "", min: "", max: "", interval: "" },
+      {
+        id: rows.length + 1,
+        ageRange: "",
+        geoMean: "",
+        gSD: "",
+        mean: "",
+        mSD: "",
+        min: "",
+        max: "",
+        intervalMin: "",
+        intervalMax: "",
+        serumType: "",
+        arithMean: "",
+        arithSD: "",
+      },
     ]);
   };
 
@@ -24,23 +47,35 @@ const Kilavuz = () => {
     setRows(rows.filter((row) => row.id !== id));
   };
 
-  const handleSave = async () => {
-    if (!guideName) {
+  const validateInputs = () => {
+    if (!guideName.trim()) {
       Alert.alert("Uyarı", "Lütfen bir kılavuz adı girin!");
-      return;
+      return false;
     }
     if (rows.length === 0) {
       Alert.alert("Uyarı", "Lütfen en az bir satır ekleyin!");
-      return;
+      return false;
     }
+   
+    return true;
+  };
+
+  const handleSave = async () => {
+    if (!validateInputs()) return;
 
     const formattedRows = rows.map((row) => ({
       ageRange: row.ageRange,
-      geoMeanMin: parseFloat(row.geoMean) - parseFloat(row.interval),
-      geoMeanMax: parseFloat(row.geoMean) + parseFloat(row.interval),
-      mean: parseFloat(row.mean),
+      geoMeanMin: parseFloat(row.geoMean) - parseFloat(row.gSD),
+      geoMeanMax: parseFloat(row.geoMean) + parseFloat(row.gSD),
+      meanMin: parseFloat(row.mean) - parseFloat(row.mSD),
+      meanMax: parseFloat(row.mean) + parseFloat(row.mSD),
       min: parseFloat(row.min),
       max: parseFloat(row.max),
+      intervalMin: parseFloat(row.intervalMin),
+      intervalMax: parseFloat(row.intervalMax),
+      serumType: row.serumType,
+      arithMeanMin: parseFloat(row.arithMean) - parseFloat(row.arithSD),
+      arithMeanMax: parseFloat(row.arithMean) + parseFloat(row.arithSD),
     }));
 
     try {
@@ -72,14 +107,25 @@ const Kilavuz = () => {
               style={styles.input}
               placeholder="Yaş Aralığı (ay)"
               value={item.ageRange}
-              onChangeText={(value) => handleInputChange(index, "ageRange", value)}
+              onChangeText={(value) =>
+                handleInputChange(index, "ageRange", value)
+              }
             />
             <TextInput
               style={styles.input}
               placeholder="Geometric Mean"
               keyboardType="numeric"
               value={item.geoMean}
-              onChangeText={(value) => handleInputChange(index, "geoMean", value)}
+              onChangeText={(value) =>
+                handleInputChange(index, "geoMean", value)
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="SD (Geometric Mean)"
+              keyboardType="numeric"
+              value={item.gSD}
+              onChangeText={(value) => handleInputChange(index, "gSD", value)}
             />
             <TextInput
               style={styles.input}
@@ -87,6 +133,13 @@ const Kilavuz = () => {
               keyboardType="numeric"
               value={item.mean}
               onChangeText={(value) => handleInputChange(index, "mean", value)}
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="SD (Mean)"
+              keyboardType="numeric"
+              value={item.mSD}
+              onChangeText={(value) => handleInputChange(index, "mSD", value)}
             />
             <TextInput
               style={styles.input}
@@ -104,17 +157,73 @@ const Kilavuz = () => {
             />
             <TextInput
               style={styles.input}
-              placeholder="Interval (SD)"
+              placeholder="Interval Min"
               keyboardType="numeric"
-              value={item.interval}
-              onChangeText={(value) => handleInputChange(index, "interval", value)}
+              value={item.intervalMin}
+              onChangeText={(value) =>
+                handleInputChange(index, "intervalMin", value)
+              }
             />
-            <Button title="Sil" color="red" onPress={() => deleteRow(item.id)} />
+            <TextInput
+              style={styles.input}
+              placeholder="Interval Max"
+              keyboardType="numeric"
+              value={item.intervalMax}
+              onChangeText={(value) =>
+                handleInputChange(index, "intervalMax", value)
+              }
+            />
+            <Picker
+              selectedValue={item.serumType}
+              style={styles.picker}
+              onValueChange={(value) =>
+                handleInputChange(index, "serumType", value)
+              }
+            >
+              <Picker.Item label="Serum Type (mg/dl)" value="" enabled={false}/>
+              <Picker.Item label="IgG" value="IgG" />
+              <Picker.Item label="IgG1" value="IgG1" />
+              <Picker.Item label="IgG2" value="IgG2" />
+              <Picker.Item label="IgG3" value="IgG3" />
+              <Picker.Item label="IgG4" value="IgG4" />
+              <Picker.Item label="IgA" value="IgA" />
+              <Picker.Item label="IgA1" value="IgA1" />
+              <Picker.Item label="IgA2" value="IgA2" />
+              <Picker.Item label="IgM" value="IgM" />
+            </Picker>
+            <TextInput
+              style={styles.input}
+              placeholder="Aritmetik Ort."
+              keyboardType="numeric"
+              value={item.arithMean}
+              onChangeText={(value) =>
+                handleInputChange(index, "arithMean", value)
+              }
+            />
+            <TextInput
+              style={styles.input}
+              placeholder="SS"
+              keyboardType="numeric"
+              value={item.arithSD}
+              onChangeText={(value) =>
+                handleInputChange(index, "arithSD", value)
+              }
+            />
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={() => deleteRow(item.id)}
+            >
+              <Text style={styles.deleteButtonText}>Sil</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
-      <Button title="Satır Ekle" onPress={addRow} />
-      <Button title="Kılavuz Oluştur" onPress={handleSave} />
+      <TouchableOpacity style={styles.addButton} onPress={addRow}>
+        <Text style={styles.addButtonText}>Satır Ekle</Text>
+      </TouchableOpacity>
+      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+        <Text style={styles.saveButtonText}>Kılavuz Oluştur</Text>
+      </TouchableOpacity>
     </View>
   );
 };
@@ -137,11 +246,41 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 10,
     marginBottom: 10,
-    width: "100%",
   },
   row: {
     flexDirection: "column",
     marginBottom: 15,
+  },
+  deleteButton: {
+    backgroundColor: "red",
+    borderRadius: 8,
+    padding: 10,
+    marginTop: 10,
+  },
+  deleteButtonText: {
+    color: "#fff",
+    textAlign: "center",
+  },
+  addButton: {
+    backgroundColor: "#6200ee",
+    borderRadius: 8,
+    padding: 15,
+    marginBottom: 10,
+  },
+  addButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
+  },
+  saveButton: {
+    backgroundColor: "green",
+    borderRadius: 8,
+    padding: 15,
+  },
+  saveButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 

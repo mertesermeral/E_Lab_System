@@ -11,6 +11,12 @@ const AdminDashboard = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Kılavuz Oluşturma</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("Kilavuz")}
+      >
+        <Text style={styles.buttonText}>Kılavuz Listeleme</Text>
+      </TouchableOpacity>
     </View>
   );
 };
