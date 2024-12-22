@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native
 import { db } from "../firebase";
 import { collection, getDocs } from "firebase/firestore";
 
-const GuidesList = ({ navigation }) => {
+const KilavuzList = ({ navigation }) => {
   const [guides, setGuides] = useState([]);
 
   useEffect(() => {
@@ -66,4 +66,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default GuidesList;
+export default KilavuzList;
