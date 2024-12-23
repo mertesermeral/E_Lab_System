@@ -8,7 +8,7 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import Kilavuz from "./Admin/Kilavuz"; 
 import KilavuzList from "./Admin/KilavuzList"; 
 import KilavuzTablosu from "./Admin/KilavuzTablosu"; 
-import TahlilEkle from "./TahlilEkle";
+import TahlilEkle from "./Admin/TahlilEkle";
 
 const Stack = createStackNavigator();
 
