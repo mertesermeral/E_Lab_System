@@ -8,6 +8,7 @@ import AdminDashboard from "./Admin/AdminDashboard";
 import Kilavuz from "./Admin/Kilavuz"; 
 import KilavuzList from "./Admin/KilavuzList"; 
 import KilavuzTablosu from "./Admin/KilavuzTablosu"; 
+import TahlilEkle from "./TahlilEkle";
 
 const Stack = createStackNavigator();
 
@@ -70,7 +71,11 @@ const App = () => {
           component={KilavuzTablosu}
           options={{ title: "Kılavuz Tablosu" }}
         />
-
+        <Stack.Screen
+          name="TahlilEkle"
+          component={TahlilEkle}
+          options={{ title: "Tahlil Ekle" }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   );

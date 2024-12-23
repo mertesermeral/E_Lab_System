@@ -13,15 +13,9 @@ const AdminDashboard = ({ navigation }) => {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => navigation.navigate("KilavuzList")}
+        onPress={() => navigation.navigate("Kilavuz")}
       >
         <Text style={styles.buttonText}>Kılavuz Listeleme</Text>
-      </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => navigation.navigate("TahlilEkle")}
-      >
-        <Text style={styles.buttonText}>Tahlil Ekle</Text>
       </TouchableOpacity>
     </View>
   );
