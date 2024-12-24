@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert, Modal, ScrollView } from "react-native";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
-
 const KilavuzTablosu = ({ route, navigation }) => {
   const { guideId } = route.params;
   const [guideData, setGuideData] = useState([]);
@@ -91,6 +90,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
             <Text style={styles.headerCell}>Min-Max</Text>
             <Text style={styles.headerCell}>%95 confidence intervals</Text>
             <Text style={styles.headerCell}>Serum Type</Text>
+            <Text style={styles.headerCell}></Text>
           </View>
 
           {/* Tablo Verileri */}
@@ -122,101 +122,108 @@ const KilavuzTablosu = ({ route, navigation }) => {
           onRequestClose={() => setIsEditing(false)}
         >
           <View style={styles.modalContainer}>
-            <View style={styles.modalContent}>
-              <Text style={styles.modalTitle}>Kılavuz Düzenle</Text>
+            <ScrollView > 
+              <View style={styles.modalContent}>
+                <Text style={styles.modalTitle}>Kılavuz Düzenle</Text>
 
-           
-              <Text style={styles.inputLabel}>Yaş (Ay)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.ageRange}
-                onChangeText={(value) => handleInputChange("ageRange", value)}
-              />
+            
+                <Text style={styles.inputLabel}>Yaş (Ay)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.ageRange}
+                  onChangeText={(value) => handleInputChange("ageRange", value)}
+                />
 
-          
-              <Text style={styles.inputLabel}>Geo Mean (Min)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.geoMeanMin}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("geoMeanMin", value)}
-              />
-             
-              <Text style={styles.inputLabel}>Geo Mean (Max)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.geoMeanMax}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("geoMeanMax", value)}
-              />
+            
+                <Text style={styles.inputLabel}>Geo Mean (Min)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.geoMeanMin}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("geoMeanMin", value)}
+                />
+              
+                <Text style={styles.inputLabel}>Geo Mean (Max)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.geoMeanMax}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("geoMeanMax", value)}
+                />
 
-             
-              <Text style={styles.inputLabel}>Mean(Min)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.meanMin}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("meanMin", value)}
-              />
-              <Text style={styles.inputLabel}>Mean(Max)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.meanMax}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("meanMax", value)}
-              />
-              <Text style={styles.inputLabel}>Arith Mean(Min)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.arithMeanMin}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("arithMeanMin", value)}
-              />
-              <Text style={styles.inputLabel}>Arith Mean(Max)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.arithMeanMax}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("arithMeanMax", value)}
-              />
-              <Text style={styles.inputLabel}>Min</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.min}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("min", value)}
-              />
-              <Text style={styles.inputLabel}>Max</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.max}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("max", value)}
-              />
-              <Text style={styles.inputLabel}>%95 confidence intervals(Min)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.intervalMin}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("intervalMin", value)}
-              />
-              <Text style={styles.inputLabel}>%95 confidence intervals(Max)</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.intervalMax}
-                keyboardType="numeric"
-                onChangeText={(value) => handleInputChange("intervalMax", value)}
-              />          
-              <Text style={styles.inputLabel}>Serum Type</Text>
-              <TextInput
-                style={styles.cellInput}
-                value={editingItem.serumType}
-                onChangeText={(value) => handleInputChange("serumType", value)}
-              />
+              
+                <Text style={styles.inputLabel}>Mean(Min)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.meanMin}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("meanMin", value)}
+                />
+                <Text style={styles.inputLabel}>Mean(Max)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.meanMax}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("meanMax", value)}
+                />
+                <Text style={styles.inputLabel}>Arith Mean(Min)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.arithMeanMin}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("arithMeanMin", value)}
+                />
+                <Text style={styles.inputLabel}>Arith Mean(Max)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.arithMeanMax}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("arithMeanMax", value)}
+                />
+                <Text style={styles.inputLabel}>Min</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.min}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("min", value)}
+                />
+                <Text style={styles.inputLabel}>Max</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.max}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("max", value)}
+                />
+                <Text style={styles.inputLabel}>%95 confidence intervals(Min)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.intervalMin}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("intervalMin", value)}
+                />
+                <Text style={styles.inputLabel}>%95 confidence intervals(Max)</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.intervalMax}
+                  keyboardType="numeric"
+                  onChangeText={(value) => handleInputChange("intervalMax", value)}
+                />          
+                <Text style={styles.inputLabel}>Serum Type</Text>
+                <TextInput
+                  style={styles.cellInput}
+                  value={editingItem.serumType}
+                  onChangeText={(value) => handleInputChange("serumType", value)}
+                />
 
-              <Button title="Kaydet" onPress={handleSave} />
-              <Button title="Vazgeç" onPress={() => setIsEditing(false)} />
-            </View>
+                  <View style={styles.button}>
+                    <Button title="Kaydet" onPress={handleSave} />
+                  </View>
+                  <View style={styles.button}>
+                    <Button title="Vazgeç" onPress={() => setIsEditing(false)} />
+                  </View>
+
+              </View>
+            </ScrollView>
           </View>
         </Modal>
       )}
@@ -259,7 +266,7 @@ const styles = StyleSheet.create({
     padding: 5,
   },
   cellInput: {
-    width: 100,
+    width: "auto",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 5,
@@ -271,19 +278,21 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
-  buttonContainer: {
+  button: {
     marginTop: 20,
     justifyContent: "center",
     alignItems: "center",
   },
   modalContainer: {
     flex: 1,
+    padding: 2,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalContent: {
-    width: "80%",
+    width: "auto",
+    height: "auto",
     padding: 20,
     backgroundColor: "#fff",
     borderRadius: 10,
