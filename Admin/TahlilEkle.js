@@ -85,8 +85,8 @@ const TahlilEkle = () => {
     }
 
     try {
-      const docRef = doc(db, "tahliller", formData.tcNumber);
       const currentDate = new Date();
+      const docRef = doc(db, "tahliller", `${formData.tcNumber}_${currentDate.toISOString()}`);
       const adjustedDate = new Date(
         formData.birthDate.getFullYear(),
         formData.birthDate.getMonth(),
