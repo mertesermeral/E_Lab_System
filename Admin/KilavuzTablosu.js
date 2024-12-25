@@ -78,10 +78,10 @@ const KilavuzTablosu = ({ route, navigation }) => {
     <View style={styles.container}>
       <Text style={styles.title}>{guideId} Kılavuzu</Text>
 
-      {/* Scrollable Table */}
+      
       <ScrollView horizontal style={styles.scrollView}>
         <View style={styles.table}>
-          {/* Tablo Başlıkları */}
+          
           <View style={styles.tableRow}>
             <Text style={styles.headerCell}>Yaş (Ay)</Text>
             <Text style={styles.headerCell}>Geo Mean</Text>
