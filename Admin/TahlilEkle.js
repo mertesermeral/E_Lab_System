@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, FlatList, ScrollView, KeyboardAvoidingView, Platform } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { db } from "../firebase";
@@ -10,9 +10,15 @@ const TahlilEkle = () => {
     fullName: "",
     tcNumber: "",
     birthDate: null,
-    age: 0,  // Yaş başlangıç değeri 0 olmalı
+    age: 0,
     gender: "",
+    patientType: "",
+    sampleType: "",
+    serumTypes: [],  // Serum tiplerini burada saklıyoruz
   });
+
+  const [newSerumType, setNewSerumType] = useState("");  // Seçilen serum tipi
+  const [newSerumValue, setNewSerumValue] = useState("");  // Serum değeri
 
   const [showDatePicker, setShowDatePicker] = useState(false);
 
@@ -20,26 +26,38 @@ const TahlilEkle = () => {
     setFormData({ ...formData, [name]: value });
   };
 
+  const handleAddSerumValue = () => {
+    if (!newSerumType || !newSerumValue) {
+      Alert.alert("Hata", "Lütfen serum tipi ve değeri girin!");
+      return;
+    }
+
+    const newSerum = { type: newSerumType, value: newSerumValue };
+    setFormData((prevData) => ({
+      ...prevData,
+      serumTypes: [...prevData.serumTypes, newSerum],
+    }));
+
+    // Temizle
+    setNewSerumType("");
+    setNewSerumValue("");
+  };
+
   const calculateAgeInMonths = (birthDate) => {
     const currentDate = new Date();
-  
-    // Yıl farkı hesaplanıyor
     let ageInMonths = (currentDate.getFullYear() - birthDate.getFullYear()) * 12 +
                        currentDate.getMonth() - birthDate.getMonth();
-  
-    // Eğer ay farkı negatifse, yani bu yıl doğum günü henüz gelmediyse, bir ay eksilt.
+
     if (currentDate.getDate() < birthDate.getDate()) {
       ageInMonths--;
     }
-  
-    // Eğer yaş 0 aylık veya daha azsa, 0 aylık kabul edelim
+
     return ageInMonths < 0 ? 0 : ageInMonths;
   };
 
   const handleDateChange = (event, selectedDate) => {
     setShowDatePicker(false);
     if (selectedDate) {
-      // Sadece tarihi al, saat bilgisi eklenmesin
       const adjustedDate = new Date(
         selectedDate.getFullYear(),
         selectedDate.getMonth(),
@@ -61,14 +79,14 @@ const TahlilEkle = () => {
   const showAlert = (title, message) => Alert.alert(title, message);
 
   const handleSave = async () => {
-    if (!formData.fullName.length || formData.tcNumber.length == 0) {
+    if (!formData.fullName.length || formData.tcNumber.length === 0) {
       showAlert("Hata", "Lütfen tüm bilgileri doğru şekilde doldurun!");
       return;
     }
 
     try {
       const docRef = doc(db, "tahliller", formData.tcNumber);
-      // Sadece tarih kısmını al, saat bilgisini sıfırla
+      const currentDate = new Date();
       const adjustedDate = new Date(
         formData.birthDate.getFullYear(),
         formData.birthDate.getMonth(),
@@ -77,7 +95,8 @@ const TahlilEkle = () => {
 
       await setDoc(docRef, {
         ...formData,
-        birthDate: adjustedDate, // Sadece tarih kaydedilir
+        birthDate: adjustedDate,
+        reportDate: currentDate,
       });
 
       showAlert("Başarılı", "Tahlil başarıyla kaydedildi!");
@@ -87,6 +106,9 @@ const TahlilEkle = () => {
         birthDate: null,
         age: 0,
         gender: "",
+        patientType: "",
+        sampleType: "",
+        serumTypes: [],  // Formu sıfırlıyoruz
       });
     } catch (error) {
       console.error("Tahlil kaydedilemedi:", error);
@@ -95,64 +117,127 @@ const TahlilEkle = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Tahlil Ekle</Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.title}>Tahlil Ekle</Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Adı Soyadı"
-        value={formData.fullName}
-        onChangeText={(value) => handleInputChange("fullName", value)}
-      />
-      <TextInput
-        style={styles.input}
-        maxLength={11}
-        placeholder="T.C. Kimlik No"
-        keyboardType="numeric"
-        value={formData.tcNumber}
-        onChangeText={(value) => handleInputChange("tcNumber", value)}
-      />
-
-      <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePicker}>
-        <Text style={styles.datePickerText}>
-          {formData.birthDate ? formatDate(formData.birthDate) : "Doğum Tarihi Seçin"}
-        </Text>
-      </TouchableOpacity>
-
-      {showDatePicker && (
-        <DateTimePicker
-          value={formData.birthDate || new Date()}
-          mode="date"
-          display="default"
-          onChange={handleDateChange}
-          maximumDate={new Date()} // Gelecek tarih seçimi engelleniyor
+        <TextInput
+          style={styles.input}
+          placeholder="Adı Soyadı"
+          value={formData.fullName}
+          onChangeText={(value) => handleInputChange("fullName", value)}
         />
-      )}
+        <TextInput
+          style={styles.input}
+          maxLength={11}
+          placeholder="T.C. Kimlik No"
+          keyboardType="numeric"
+          value={formData.tcNumber}
+          onChangeText={(value) => handleInputChange("tcNumber", value)}
+        />
 
-      <Text style={styles.ageDisplay}>Yaş (Ay): {formData.age}</Text>
+        <TouchableOpacity onPress={() => setShowDatePicker(true)} style={styles.datePicker}>
+          <Text style={styles.datePickerText}>
+            {formData.birthDate ? formatDate(formData.birthDate) : "Doğum Tarihi Seçin"}
+          </Text>
+        </TouchableOpacity>
 
-      <Picker
-        selectedValue={formData.gender}
-        onValueChange={(value) => handleInputChange("gender", value)}
-        style={styles.input}
-      >
-        <Picker.Item label="Cinsiyet Seçin" value="" />
-        <Picker.Item label="Erkek" value="Erkek" />
-        <Picker.Item label="Kadın" value="Kadın" />
-      </Picker>
+        {showDatePicker && (
+          <DateTimePicker
+            value={formData.birthDate || new Date()}
+            mode="date"
+            display="default"
+            onChange={handleDateChange}
+            maximumDate={new Date()}
+          />
+        )}
 
-      <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Kaydet</Text>
-      </TouchableOpacity>
-    </View>
+        <Text style={styles.ageDisplay}>Yaş (Ay): {formData.age}</Text>
+
+        <Picker
+          selectedValue={formData.gender}
+          onValueChange={(value) => handleInputChange("gender", value)}
+          style={styles.input}
+        >
+          <Picker.Item label="Cinsiyet Seçin" value="" />
+          <Picker.Item label="Erkek" value="Erkek" />
+          <Picker.Item label="Kadın" value="Kadın" />
+        </Picker>
+        <Picker
+          selectedValue={formData.patientType}
+          onValueChange={(value) => handleInputChange("patientType", value)}
+          style={styles.input}
+        >
+          <Picker.Item label="Hasta Türü" value="" />
+          <Picker.Item label="Yatan Hasta" value="Yatan Hasta" />
+          <Picker.Item label="Ayakta Hasta" value="Ayakta Hasta" />
+        </Picker>
+        <TextInput
+          style={styles.input}
+          placeholder="Numune Türü"
+          value={formData.sampleType}
+          onChangeText={(value) => handleInputChange("sampleType", value)}
+        />
+
+        <Text style={styles.ageDisplay}>Tetkik Adı (mg/dl)</Text>
+        <Picker
+          selectedValue={newSerumType}
+          onValueChange={(itemValue) => setNewSerumType(itemValue)}
+          style={styles.input}
+        >
+          <Picker.Item label="Serum Tipi Seçin" value="" />
+          <Picker.Item label="IgG" value="IgG" />
+          <Picker.Item label="IgG1" value="IgG1" />
+          <Picker.Item label="IgG2" value="IgG2" />
+          <Picker.Item label="IgG3" value="IgG3" />
+          <Picker.Item label="IgG4" value="IgG4" />
+          <Picker.Item label="IgA" value="IgA" />
+          <Picker.Item label="IgA1" value="IgA1" />
+          <Picker.Item label="IgA2" value="IgA2" />
+          <Picker.Item label="IgM" value="IgM" />
+        </Picker>
+
+        <TextInput
+          style={styles.input}
+          placeholder="Serum Değeri"
+          value={newSerumValue}
+          keyboardType="numeric"
+          onChangeText={(value) => setNewSerumValue(value)}
+        />
+
+        <TouchableOpacity style={styles.saveButton} onPress={handleAddSerumValue}>
+          <Text style={styles.saveButtonText}>Serum Değeri Ekle</Text>
+        </TouchableOpacity>
+
+        {formData.serumTypes.length > 0 && (
+          <View style={styles.serumList}>
+            {formData.serumTypes.map((serum, index) => (
+              <Text key={index} style={styles.serumItem}>
+                {serum.type}: {serum.value}
+              </Text>
+            ))}
+          </View>
+        )}
+
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.saveButtonText}>Kaydet</Text>
+        </TouchableOpacity>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
     backgroundColor: "#fff",
+  },
+  scrollContainer: {
+    padding: 20,
+    paddingBottom: 30, // Kaydet butonunun altının görünmesini sağlar
   },
   title: {
     fontSize: 24,
@@ -186,11 +271,19 @@ const styles = StyleSheet.create({
     backgroundColor: "green",
     borderRadius: 8,
     padding: 15,
+    marginTop: 10,
   },
   saveButtonText: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
+  },
+  serumList: {
+    marginTop: 20,
+  },
+  serumItem: {
+    fontSize: 16,
+    marginBottom: 5,
   },
 });
 
