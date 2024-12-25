@@ -9,7 +9,7 @@ import Kilavuz from "./Admin/Kilavuz";
 import KilavuzList from "./Admin/KilavuzList"; 
 import KilavuzTablosu from "./Admin/KilavuzTablosu"; 
 import TahlilEkle from "./Admin/TahlilEkle";
-
+import KilavuzGuncelle from "./Admin/KilavuzGuncelle";
 const Stack = createStackNavigator();
 
 const HomeScreen = ({ navigation }) => {
@@ -75,6 +75,11 @@ const App = () => {
           name="TahlilEkle"
           component={TahlilEkle}
           options={{ title: "Tahlil Ekle" }}
+        />
+      <Stack.Screen
+          name="KilavuzGuncelle"
+          component={KilavuzGuncelle}
+          options={{ title: "Kılavuz Güncelle" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

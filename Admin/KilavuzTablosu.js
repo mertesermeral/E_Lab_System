@@ -76,8 +76,14 @@ const KilavuzTablosu = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{guideId} Kılavuzu</Text>
-
+  <View style={styles.header}>
+    <Text style={styles.title}>{guideId} Kılavuzu</Text>
+    <Button
+      title="Güncelle"
+      onPress={() => navigation.navigate("KilavuzGuncelle", { guideId })}
+      color="#6200ee"
+    />
+  </View>
       
       <ScrollView horizontal style={styles.scrollView}>
         <View style={styles.table}>
