@@ -76,14 +76,16 @@ const KilavuzTablosu = ({ route, navigation }) => {
 
   return (
     <View style={styles.container}>
-  <View style={styles.header}>
-    <Text style={styles.title}>{guideId} Kılavuzu</Text>
-    <Button
-      title="Güncelle"
-      onPress={() => navigation.navigate("KilavuzGuncelle", { guideId })}
-      color="#6200ee"
-    />
-  </View>
+    {/* Tablo Başlığı ve Güncelle Butonu */}
+    <View style={styles.header}>
+    {console.log("Güncelle butonu render ediliyor")}
+      <Text style={styles.title}>{guideId} Kılavuzu</Text>
+      <Button
+        title="Güncelle"
+        onPress={() => navigation.navigate("KilavuzGuncelle", { guideId })}
+        color="#6200ee"
+      />
+    </View>
       
       <ScrollView horizontal style={styles.scrollView}>
         <View style={styles.table}>
@@ -238,6 +240,14 @@ const KilavuzTablosu = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  header: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%", // Genişlik
+    padding: 10,  // İç boşluk
+    backgroundColor: "#f8f9fa", // Arka plan kontrolü
+  },
   container: {
     flex: 1,
     padding: 20,
