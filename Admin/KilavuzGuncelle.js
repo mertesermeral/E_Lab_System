@@ -1,186 +1,217 @@
-import React, { useState, useEffect } from "react";
-import {
-  View,
-  Text,
-  TextInput,
-  Button,
-  StyleSheet,
-  FlatList,
-  Alert,
-} from "react-native";
-import { Picker } from "@react-native-picker/picker";
+import React, { useState } from "react";
+import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 
 const KilavuzGuncelle = ({ route, navigation }) => {
   const { guideId } = route.params;
-  const [guideData, setGuideData] = useState([]);
   const [newRow, setNewRow] = useState({
     ageRange: "",
-    geoMean: "",
-    gSD: "",
-    mean: "",
-    mSD: "",
+    geoMeanMin: "",
+    geoMeanMax: "",
+    meanMin: "",
+    meanMax: "",
+    arithMeanMin: "",
+    arithMeanMax: "",
     min: "",
     max: "",
     intervalMin: "",
     intervalMax: "",
     serumType: "",
-    arithMean: "",
-    arithSD: "",
   });
 
-  useEffect(() => {
-    const fetchGuide = async () => {
-      try {
-        const docRef = doc(db, "guides", guideId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setGuideData(docSnap.data().data || []);
-          console.log("Kılavuz verileri yüklendi!");
-        } else {
-          Alert.alert("Hata", "Kılavuz bulunamadı!");
-        }
-      } catch (error) {
-        console.error("Kılavuz çekilemedi: ", error);
-      }
-    };
-
-    fetchGuide();
-  }, [guideId]);
-
-  const handleInputChange = (index, field, value) => {
-    const updatedData = [...guideData];
-    updatedData[index][field] = value;
-    setGuideData(updatedData);
+  const handleInputChange = (field, value) => {
+    setNewRow({ ...newRow, [field]: value });
   };
 
   const handleAddRow = async () => {
-    const updatedData = [...guideData, newRow];
     try {
+      // Firebase'den mevcut kılavuzu çek
       const docRef = doc(db, "guides", guideId);
-      await updateDoc(docRef, { data: updatedData });
-      setGuideData(updatedData);
-      setNewRow({
-        ageRange: "",
-        geoMean: "",
-        gSD: "",
-        mean: "",
-        mSD: "",
-        min: "",
-        max: "",
-        intervalMin: "",
-        intervalMax: "",
-        serumType: "",
-        arithMean: "",
-        arithSD: "",
-      });
-      Alert.alert("Başarılı", "Yeni satır başarıyla eklendi!");
+      const docSnap = await getDoc(docRef);
+
+      if (docSnap.exists()) {
+        const existingData = docSnap.data().data || [];
+
+        // Yeni satırı oluştur
+        const formattedRow = {
+          ...newRow,
+          geoMeanMin: newRow.geoMeanMin ? parseFloat(newRow.geoMeanMin) : NaN,
+          geoMeanMax: newRow.geoMeanMax ? parseFloat(newRow.geoMeanMax) : NaN,
+          meanMin: newRow.meanMin ? parseFloat(newRow.meanMin) : NaN,
+          meanMax: newRow.meanMax ? parseFloat(newRow.meanMax) : NaN,
+          arithMeanMin: newRow.arithMeanMin ? parseFloat(newRow.arithMeanMin) : NaN,
+          arithMeanMax: newRow.arithMeanMax ? parseFloat(newRow.arithMeanMax) : NaN,
+          intervalMin: newRow.intervalMin ? parseFloat(newRow.intervalMin) : NaN,
+          intervalMax: newRow.intervalMax ? parseFloat(newRow.intervalMax) : NaN,
+          min: newRow.min ? parseFloat(newRow.min) : NaN,
+          max: newRow.max ? parseFloat(newRow.max) : NaN,
+        };
+
+        // Mevcut verilere yeni satırı ekle
+        const updatedData = [...existingData, formattedRow];
+
+        // Firestore'da güncelle
+        await updateDoc(docRef, { data: updatedData });
+
+        Alert.alert("Başarılı", "Yeni satır başarıyla eklendi!");
+        navigation.goBack(); // Bir önceki sayfaya dön
+      } else {
+        Alert.alert("Hata", "Kılavuz bulunamadı!");
+      }
     } catch (error) {
-      console.error("Satır eklenemedi: ", error);
+      console.error("Satır eklenirken hata oluştu: ", error);
       Alert.alert("Hata", "Satır eklenirken bir hata oluştu!");
     }
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Kılavuz Güncelle: {guideId}</Text>
+     <KeyboardAvoidingView
+          style={styles.container}
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
+        >
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <Text style={styles.title}>Yeni Satır Ekle</Text>
 
-      <FlatList
-        data={guideData}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
-          <View style={styles.row}>
-            <TextInput
-              style={styles.input}
-              placeholder="Yaş Aralığı (Ay)"
-              value={item.ageRange}
-              onChangeText={(value) => handleInputChange(index, "ageRange", value)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Geometric Mean"
-              keyboardType="numeric"
-              value={item.geoMean}
-              onChangeText={(value) => handleInputChange(index, "geoMean", value)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="SD (Geometric Mean)"
-              keyboardType="numeric"
-              value={item.gSD}
-              onChangeText={(value) => handleInputChange(index, "gSD", value)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Mean"
-              keyboardType="numeric"
-              value={item.mean}
-              onChangeText={(value) => handleInputChange(index, "mean", value)}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="SD (Mean)"
-              keyboardType="numeric"
-              value={item.mSD}
-              onChangeText={(value) => handleInputChange(index, "mSD", value)}
-            />
-            <Picker
-              selectedValue={item.serumType}
-              style={styles.picker}
-              onValueChange={(value) => handleInputChange(index, "serumType", value)}
-            >
-              <Picker.Item label="Serum Type (mg/dl)" value="" enabled={false} />
-              <Picker.Item label="IgG" value="IgG" />
-              <Picker.Item label="IgG1" value="IgG1" />
-              <Picker.Item label="IgG2" value="IgG2" />
-              <Picker.Item label="IgG3" value="IgG3" />
-              <Picker.Item label="IgG4" value="IgG4" />
-              <Picker.Item label="IgA" value="IgA" />
-              <Picker.Item label="IgA1" value="IgA1" />
-              <Picker.Item label="IgA2" value="IgA2" />
-              <Picker.Item label="IgM" value="IgM" />
-            </Picker>
-          </View>
-        )}
+      <Text style={styles.inputLabel}>Yaş (Ay)</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.ageRange}
+        onChangeText={(value) => handleInputChange("ageRange", value)}
       />
 
-      <Button title="Yeni Satır Ekle" onPress={handleAddRow} />
-    </View>
+      <Text style={styles.inputLabel}>Geo Mean Min</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.geoMeanMin}
+        onChangeText={(value) => handleInputChange("geoMeanMin", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Geo Mean Max</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.geoMeanMax}
+        onChangeText={(value) => handleInputChange("geoMeanMax", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Mean Min</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.meanMin}
+        onChangeText={(value) => handleInputChange("meanMin", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Mean Max</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.meanMax}
+        onChangeText={(value) => handleInputChange("meanMax", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Arith Mean Min</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.arithMeanMin}
+        onChangeText={(value) => handleInputChange("arithMeanMin", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Arith Mean Max</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.arithMeanMax}
+        onChangeText={(value) => handleInputChange("arithMeanMax", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Min</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.min}
+        onChangeText={(value) => handleInputChange("min", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Max</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.max}
+        onChangeText={(value) => handleInputChange("max", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>%95 Confidence Interval Min</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.intervalMin}
+        onChangeText={(value) => handleInputChange("intervalMin", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>%95 Confidence Interval Max</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.intervalMax}
+        onChangeText={(value) => handleInputChange("intervalMax", value)}
+        keyboardType="numeric"
+      />
+
+      <Text style={styles.inputLabel}>Serum Tipi</Text>
+      <TextInput
+        style={styles.input}
+        value={newRow.serumType}
+        onChangeText={(value) => handleInputChange("serumType", value)}
+      />
+
+      <TouchableOpacity style={styles.saveButton} onPress={handleAddRow}>
+        <Text style={styles.saveButtonText}>Ekle</Text>
+      </TouchableOpacity>
+    </ScrollView>
+    </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
+    padding: 16,
     backgroundColor: "#fff",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    marginBottom: 20,
-    textAlign: "center",
+  scrollContainer: {
+    padding: 20,
+    paddingBottom: 30, // Kaydet butonunun altının görünmesini sağlar
   },
-  row: {
-    marginBottom: 15,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
+  title: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  inputLabel: {
+    fontSize: 16,
+    marginBottom: 8,
   },
   input: {
-    borderWidth: 1,
+    height: 40,
     borderColor: "#ccc",
-    borderRadius: 8,
-    padding: 10,
-    marginBottom: 10,
+    borderWidth: 1,
+    marginBottom: 16,
+    paddingHorizontal: 8,
+    borderRadius: 4,
   },
-  picker: {
-    borderWidth: 1,
-    borderColor: "#ccc",
+  saveButton: {
+    backgroundColor: "green",
     borderRadius: 8,
-    marginBottom: 10,
+    padding: 15,
+    marginTop: 10,
+  },
+  saveButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 

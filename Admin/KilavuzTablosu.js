@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert, Modal, ScrollView } from "react-native";
+import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert, Modal, ScrollView,TouchableOpacity} from "react-native";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
 const KilavuzTablosu = ({ route, navigation }) => {
@@ -7,7 +7,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
   const [guideData, setGuideData] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
-
+  const [editingIndex, setEditingIndex] = useState(null);
   useEffect(() => {
     const fetchGuide = async () => {
       try {
@@ -49,9 +49,10 @@ const KilavuzTablosu = ({ route, navigation }) => {
       };
   
       // guideData'yı güncelle
-      const updatedData = guideData.map(item =>
-        item.ageRange === editingItem.ageRange ? updatedItem : item
-      );
+      const updatedData = [...guideData];
+      if (editingIndex !== null) {
+        updatedData[editingIndex] = updatedItem; // Index bazlı güncelleme
+      }
   
       // Firestore'da güncelle
       const docRef = doc(db, "guides", guideId);
@@ -68,24 +69,19 @@ const KilavuzTablosu = ({ route, navigation }) => {
   };
   
 
-  const openEditModal = (item) => {
+  const openEditModal = (item, index) => {
     // Set the item that needs to be edited into the modal
     setEditingItem(item);
+    setEditingIndex(index);
     setIsEditing(true); // Open modal
   };
 
   return (
     <View style={styles.container}>
-    {/* Tablo Başlığı ve Güncelle Butonu */}
-    <View style={styles.header}>
-    {console.log("Güncelle butonu render ediliyor")}
+    
       <Text style={styles.title}>{guideId} Kılavuzu</Text>
-      <Button
-        title="Güncelle"
-        onPress={() => navigation.navigate("KilavuzGuncelle", { guideId })}
-        color="#6200ee"
-      />
-    </View>
+      
+    
       
       <ScrollView horizontal style={styles.scrollView}>
         <View style={styles.table}>
@@ -105,7 +101,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
           <FlatList
             data={guideData}
             keyExtractor={(_, index) => index.toString()}
-            renderItem={({ item }) => (
+            renderItem={({ item, index }) => (
               <View style={styles.tableRow}>
                 <Text style={styles.cell}>{item.ageRange}</Text>
                 <Text style={styles.cell}>{item.geoMeanMin}-{item.geoMeanMax}</Text>
@@ -114,10 +110,17 @@ const KilavuzTablosu = ({ route, navigation }) => {
                 <Text style={styles.cell}>{item.min}-{item.max}</Text>
                 <Text style={styles.cell}>{item.intervalMin}-{item.intervalMax}</Text>
                 <Text style={styles.cell}>{item.serumType}</Text>
-                <Button title="Düzenle" onPress={() => openEditModal(item)} />
+                <TouchableOpacity style={styles.saveButton} onPress={() => openEditModal(item, index)}>
+                    <Text style={styles.saveButtonText}>Düzenle</Text>
+                </TouchableOpacity>
+                
               </View>
             )}
           />
+            <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate("KilavuzGuncelle", { guideId })}>
+                    <Text style={styles.saveButtonText}>Yeni Satır Ekle</Text>
+            </TouchableOpacity>
+                          
         </View>
       </ScrollView>
 
@@ -222,13 +225,13 @@ const KilavuzTablosu = ({ route, navigation }) => {
                   value={editingItem.serumType}
                   onChangeText={(value) => handleInputChange("serumType", value)}
                 />
-
-                  <View style={styles.button}>
-                    <Button title="Kaydet" onPress={handleSave} />
-                  </View>
-                  <View style={styles.button}>
-                    <Button title="Vazgeç" onPress={() => setIsEditing(false)} />
-                  </View>
+                   <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+                    <Text style={styles.saveButtonText}>Kaydet</Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity style={styles.saveButton} onPress={() => setIsEditing(false)}>
+                    <Text style={styles.saveButtonText}>Vazgeç</Text>
+                    </TouchableOpacity>
+                  
 
               </View>
             </ScrollView>
@@ -240,14 +243,6 @@ const KilavuzTablosu = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  header: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%", // Genişlik
-    padding: 10,  // İç boşluk
-    backgroundColor: "#f8f9fa", // Arka plan kontrolü
-  },
   container: {
     flex: 1,
     padding: 20,
@@ -295,7 +290,7 @@ const styles = StyleSheet.create({
     marginBottom: 5,
   },
   button: {
-    marginTop: 20,
+    marginTop: 10,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -321,6 +316,20 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
+  },
+  saveButton: {
+    backgroundColor: "blue",
+    paddingVertical: 10,
+    borderRadius: 8,
+    padding: 15,
+    margin: 4,
+    width: "auto",
+    alignSelf: "center",
+  },
+  saveButtonText: {
+    color: "#fff",
+    textAlign: "center",
+    fontWeight: "bold",
   },
 });
 
