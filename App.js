@@ -11,6 +11,7 @@ import KilavuzTablosu from "./Admin/KilavuzTablosu";
 import TahlilEkle from "./Admin/TahlilEkle";
 import KilavuzGuncelle from "./Admin/KilavuzGuncelle";
 import TahlilList from "./Admin/TahlilList";
+import TahlilDetay from "./Admin/TahlilDetay";
 const Stack = createStackNavigator();
 
 const HomeScreen = ({ navigation }) => {
@@ -85,7 +86,12 @@ const App = () => {
       <Stack.Screen
           name="TahlilList"
           component={TahlilList}
-          options={{ title: "Tahliller" }}
+          options={{ title: "Tahliller Listesi" }}
+        />
+      <Stack.Screen
+          name="TahlilDetay"
+          component={TahlilDetay}
+          options={{ title: "Tahlil" }}
         />
       </Stack.Navigator>
     </NavigationContainer>
