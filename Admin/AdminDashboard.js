@@ -23,6 +23,13 @@ const AdminDashboard = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Tahlil Ekle</Text>
       </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => navigation.navigate("TahlilList")}
+      >
+        <Text style={styles.buttonText}>Tahlil Listeleme</Text>
+      </TouchableOpacity>
+      
     </View>
   );
 };

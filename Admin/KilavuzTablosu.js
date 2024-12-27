@@ -5,6 +5,8 @@ import { doc, getDoc, updateDoc } from "firebase/firestore";
 const KilavuzTablosu = ({ route, navigation }) => {
   const { guideId } = route.params;
   const [guideData, setGuideData] = useState([]);
+  const [filteredData, setFilteredData] = useState([]);
+  const [searchText, setSearchText] = useState("");
   const [isEditing, setIsEditing] = useState(false);
   const [editingItem, setEditingItem] = useState(null);
   const [editingIndex, setEditingIndex] = useState(null);
@@ -15,6 +17,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setGuideData(docSnap.data().data || []);
+          setFilteredData(docSnap.data().data || []);
         } else {
           Alert.alert("Hata", "Kılavuz bulunamadı!");
         }
@@ -25,6 +28,16 @@ const KilavuzTablosu = ({ route, navigation }) => {
 
     fetchGuide();
   }, [guideId]);
+
+  const handleSearch = (text) => {
+    setSearchText(text);
+    const filtered = guideData.filter((item) =>
+      Object.values(item).some((value) =>
+        value.toString().toLowerCase().includes(text.toLowerCase())
+      )
+    );
+    setFilteredData(filtered);
+  };
 
   const handleInputChange = (field, value) => {
     const updatedItem = { ...editingItem, [field]: value };
@@ -60,6 +73,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
   
       // Local state güncelle
       setGuideData(updatedData);
+      setFilteredData(updatedData);
       Alert.alert("Başarılı", "Kılavuz başarıyla güncellendi!");
       setIsEditing(false); // Modalı kapat
     } catch (error) {
@@ -80,7 +94,12 @@ const KilavuzTablosu = ({ route, navigation }) => {
     <View style={styles.container}>
     
       <Text style={styles.title}>{guideId} Kılavuzu</Text>
-      
+      <TextInput
+        style={styles.searchInput}
+        placeholder="Yaş Aralığına Göre Ara..."
+        value={searchText}
+        onChangeText={handleSearch}
+      />
     
       
       <ScrollView horizontal style={styles.scrollView}>
@@ -99,7 +118,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
 
           {/* Tablo Verileri */}
           <FlatList
-            data={guideData}
+            data={filteredData}
             keyExtractor={(_, index) => index.toString()}
             renderItem={({ item, index }) => (
               <View style={styles.tableRow}>
@@ -330,6 +349,14 @@ const styles = StyleSheet.create({
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
+  },
+   searchInput: {
+    height: 40,
+    borderColor: "#ccc",
+    borderWidth: 1,
+    borderRadius: 8,
+    paddingHorizontal: 10,
+    marginBottom: 20,
   },
 });
 
