@@ -62,22 +62,25 @@ const Kilavuz = () => {
 
   const handleSave = async () => {
     if (!validateInputs()) return;
-    const roundNumber = (num, precision) => {
-      return parseFloat(num.toFixed(precision)); // ondalık kısmı yuvarlama
+
+    const formatNumber = (num, precision) => {
+        const factor = Math.pow(10, precision); // Virgülden sonraki basamağa kadar olan sayıyı elde etmek için çarpan
+        return Math.floor(num * factor) / factor; // Sayıyı çarpıp kesip sonra bölerek virgülden sonrası alınır
     };
+
     const formattedRows = rows.map((row) => ({
-      ageRange: row.ageRange,
-      geoMeanMin: roundNumber(parseFloat(row.geoMean) - parseFloat(row.gSD), 2), // GeoMean - GSD
-      geoMeanMax: roundNumber(parseFloat(row.geoMean) + parseFloat(row.gSD), 2), // GeoMean + GSD
-      meanMin: roundNumber(parseFloat(row.mean) - parseFloat(row.mSD), 2), // Mean - MSD
-      meanMax: roundNumber(parseFloat(row.mean) + parseFloat(row.mSD), 2), // Mean + MSD
-      min: roundNumber(parseFloat(row.min), 2), // Min değerini yuvarla
-      max: roundNumber(parseFloat(row.max), 2), // Max değerini yuvarla
-      intervalMin: roundNumber(parseFloat(row.intervalMin), 2), // Interval Min değerini yuvarla
-      intervalMax: roundNumber(parseFloat(row.intervalMax), 2), // Interval Max değerini yuvarla
-      serumType: row.serumType, 
-      arithMeanMin: roundNumber(parseFloat(row.arithMean) - parseFloat(row.arithSD), 2), // ArithMean - ArithSD
-      arithMeanMax: roundNumber(parseFloat(row.arithMean) + parseFloat(row.arithSD), 2), // ArithMean + ArithSD
+        ageRange: row.ageRange,
+        geoMeanMin: formatNumber(parseFloat(row.geoMean) - parseFloat(row.gSD), 2), // GeoMean - GSD
+        geoMeanMax: formatNumber(parseFloat(row.geoMean) + parseFloat(row.gSD), 2), // GeoMean + GSD
+        meanMin: formatNumber(parseFloat(row.mean) - parseFloat(row.mSD), 2), // Mean - MSD
+        meanMax: formatNumber(parseFloat(row.mean) + parseFloat(row.mSD), 2), // Mean + MSD
+        min: formatNumber(parseFloat(row.min), 2), // Min değerini kes
+        max: formatNumber(parseFloat(row.max), 2), // Max değerini kes
+        intervalMin: formatNumber(parseFloat(row.intervalMin), 2), // Interval Min değerini kes
+        intervalMax: formatNumber(parseFloat(row.intervalMax), 2), // Interval Max değerini kes
+        serumType: row.serumType, 
+        arithMeanMin: formatNumber(parseFloat(row.arithMean) - parseFloat(row.arithSD), 2), // ArithMean - ArithSD
+        arithMeanMax: formatNumber(parseFloat(row.arithMean) + parseFloat(row.arithSD), 2), // ArithMean + ArithSD
     }));
 
     try {

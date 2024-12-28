@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert, Modal, ScrollView,TouchableOpacity} from "react-native";
 import { db } from "../firebase";
-import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 const KilavuzTablosu = ({ route, navigation }) => {
   const { guideId } = route.params;
   const [guideData, setGuideData] = useState([]);
@@ -81,7 +81,27 @@ const KilavuzTablosu = ({ route, navigation }) => {
       Alert.alert("Hata", "Kılavuz güncellenirken bir hata oluştu!");
     }
   };
-  
+  const handleDelete = async () => {
+      try {
+        const docRef = doc(db, "guides", guideId);
+        await deleteDoc(docRef);
+        Alert.alert("Başarılı", "Kılavuz başarıyla silindi.");
+        navigation.navigate("KilavuzList"); // Silme işlemi sonrası geri git
+      } catch (error) {
+        console.error("Kılavuz silinirken hata oluştu:", error);
+        Alert.alert("Hata", "Kılavuz silinirken bir hata oluştu.");
+      }
+    };  
+  const confirmDelete = () => { //tahlil silme onay kısmı
+      Alert.alert(
+        "Silme Onayı",
+        "Bu kılavuzu silmek istediğinizden emin misiniz?",
+        [
+          { text: "Hayır", style: "cancel" },
+          { text: "Evet", onPress: handleDelete }
+        ]
+      );
+    };
 
   const openEditModal = (item, index) => {
     // Set the item that needs to be edited into the modal
@@ -130,15 +150,18 @@ const KilavuzTablosu = ({ route, navigation }) => {
                 <Text style={styles.cell}>{item.intervalMin}-{item.intervalMax}</Text>
                 <Text style={styles.cell}>{item.serumType}</Text>
                 <TouchableOpacity style={styles.saveButton} onPress={() => openEditModal(item, index)}>
-                    <Text style={styles.saveButtonText}>Düzenle</Text>
+                    <Text style={styles.ButtonText}>Düzenle</Text>
                 </TouchableOpacity>
                 
               </View>
             )}
           />
             <TouchableOpacity style={styles.saveButton} onPress={() => navigation.navigate("KilavuzGuncelle", { guideId })}>
-                    <Text style={styles.saveButtonText}>Yeni Satır Ekle</Text>
+                    <Text style={styles.ButtonText}>Yeni Satır Ekle</Text>
             </TouchableOpacity>
+            <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
+                    <Text style={styles.ButtonText}>Kılavuzu Sil</Text>
+                  </TouchableOpacity>
                           
         </View>
       </ScrollView>
@@ -245,10 +268,10 @@ const KilavuzTablosu = ({ route, navigation }) => {
                   onChangeText={(value) => handleInputChange("serumType", value)}
                 />
                    <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-                    <Text style={styles.saveButtonText}>Kaydet</Text>
+                    <Text style={styles.ButtonText}>Kaydet</Text>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.saveButton} onPress={() => setIsEditing(false)}>
-                    <Text style={styles.saveButtonText}>Vazgeç</Text>
+                    <Text style={styles.ButtonText}>Vazgeç</Text>
                     </TouchableOpacity>
                   
 
@@ -345,7 +368,7 @@ const styles = StyleSheet.create({
     width: "auto",
     alignSelf: "center",
   },
-  saveButtonText: {
+  ButtonText: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
@@ -358,6 +381,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     marginBottom: 20,
   },
+  deleteButton: {
+    backgroundColor: "red",
+    paddingVertical: 10,
+    borderRadius: 8,
+    padding: 15,
+    margin: 4,
+    width: "auto",
+    alignSelf: "center",
+  }
 });
 
 export default KilavuzTablosu;

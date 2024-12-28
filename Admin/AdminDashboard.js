@@ -4,7 +4,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 const AdminDashboard = ({ navigation }) => {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Admin Dashboard</Text>
+      <Text style={styles.title}>Doktor Sayfası</Text>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("Kilavuz")}
