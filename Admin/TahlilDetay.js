@@ -83,10 +83,25 @@ const TahlilDetay = ({ route, navigation }) => {
   }, [tahlilData]);
 
   // Yaş aralığına göre filtreleme
-  const filterRowsByAge = (rows, age) => {
+  const filterRowsByAge = (rows, age) => { 
     return rows.filter((row) => {
-      const [minAge, maxAge] = row.ageRange.split("-").map(Number);
-      return age >= minAge && age <= maxAge;
+      const [minAge, maxAge] = row.ageRange.split("-").map((value) => 
+        value === "" ? null : Number(value) // Eğer boşsa `null`, değilse sayıya çevir
+      );
+  
+      // Yaş aralığı kontrolleri
+      if (minAge !== null && maxAge !== null) {
+        // Hem alt hem üst sınır var
+        return age >= minAge && age <= maxAge;
+      } else if (minAge !== null) {
+        // Sadece alt sınır var
+        return age >= minAge;
+      } else if (maxAge !== null) {
+        // Sadece üst sınır var
+        return age <= maxAge;
+      }
+  
+      return false; // Geçersiz bir aralık varsa filtrelemez
     });
   };
 
@@ -171,7 +186,7 @@ const TahlilDetay = ({ route, navigation }) => {
       const docRef = doc(db, "tahliller", tahlilId);
       await deleteDoc(docRef);
       Alert.alert("Başarılı", "Tahlil başarıyla silindi.");
-      navigation.navigate("TahlilList"); // Silme işlemi sonrası geri git
+      navigation.goBack(); // Silme işlemi sonrası geri git
     } catch (error) {
       console.error("Tahlil silinirken hata oluştu:", error);
       Alert.alert("Hata", "Tahlil silinirken bir hata oluştu.");

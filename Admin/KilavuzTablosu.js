@@ -86,7 +86,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
         const docRef = doc(db, "guides", guideId);
         await deleteDoc(docRef);
         Alert.alert("Başarılı", "Kılavuz başarıyla silindi.");
-        navigation.navigate("KilavuzList"); // Silme işlemi sonrası geri git
+        navigation.goBack(); // Silme işlemi sonrası geri git
       } catch (error) {
         console.error("Kılavuz silinirken hata oluştu:", error);
         Alert.alert("Hata", "Kılavuz silinirken bir hata oluştu.");
