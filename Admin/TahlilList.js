@@ -56,7 +56,7 @@ const TahlilList = ({ navigation }) => {
             style={styles.listItem}
             onPress={() => navigation.navigate("TahlilDetay", { tahlilId: item.id })}
           >
-            <Text style={styles.listItemText}> {item.fullName} - {new Date(item.reportDate.toDate()).toLocaleString("tr-TR", {timeZone: "Europe/Istanbul"})}</Text>
+            <Text style={styles.listItemText}> {item.fullName} - {item.reportDate}</Text>
           </TouchableOpacity>
         )}
       />

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
 import { db } from "../firebase";
-import { doc, getDoc, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
 
 // Serum değerini değerlendirme fonksiyonu
 const evaluateSerumValue = (serumValue, min, max) => {
@@ -14,6 +14,7 @@ const TahlilDetay = ({ route, navigation }) => {
   const { tahlilId } = route.params; // Tahlil için TC numarası parametre olarak geçiyor
   const [tahlilData, setTahlilData] = useState(null);
   const [guides, setGuides] = useState([]); // Kılavuzlar
+  const [previousTahlils, setPreviousTahlils] = useState([]); // Önceki tahliller
 
   // Tahlil verisini Firebase'den alıyoruz
   useEffect(() => {
@@ -52,6 +53,34 @@ const TahlilDetay = ({ route, navigation }) => {
     fetchTahlilData();
     fetchGuides();
   }, [tahlilId]);
+
+  useEffect(() => {
+    const fetchPreviousTahlils = async () => {
+      if (!tahlilData) return;
+
+      try {
+        const querySnapshot = await getDocs(collection(db, "tahliller"));
+        const previousTahlils = [];
+
+        querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          if (
+            data.tcNumber === tahlilData.tcNumber && // Aynı hastaya ait
+            data.reportDate < tahlilData.reportDate // Daha önceki bir tarih
+          ) {
+            previousTahlils.push(data);
+          }
+        });
+
+        // Tarihe göre sıralama (en yakın geçmişteki önce gelir)
+        setPreviousTahlils(previousTahlils.sort((a, b) => new Date(b.reportDate) - new Date(a.reportDate)));
+      } catch (error) {
+        console.error("Önceki tahliller alınırken hata oluştu:", error);
+      }
+    };
+
+    fetchPreviousTahlils();
+  }, [tahlilData]);
 
   // Yaş aralığına göre filtreleme
   const filterRowsByAge = (rows, age) => {
@@ -108,20 +137,23 @@ const TahlilDetay = ({ route, navigation }) => {
           return null;
         }).filter(result => result !== null); // Geçerli olanları alıyoruz (NaN olmayan)
   
-        // Eğer tüm sütunlar NaN ise bu satırı atlıyoruz
         return evaluations.length > 0 ? {
           guideName: guide.guideName,
           ageRange: row.ageRange,
           evaluations,
         } : null;
-      }).filter(result => result !== null); // NaN olmayan satırları alıyoruz
+      }).filter(result => result !== null);
   
       return guideResults;
     }).flat();
   };
-  
 
-  // Ok renkleri
+  const calculateChange = (currentValue, previousValue) => {
+    if (currentValue > previousValue) return "↑";
+    if (currentValue < previousValue) return "↓";
+    return "↔";
+  };
+
   const getArrowStyle = (arrow) => {
     switch (arrow) {
       case "↓":
@@ -130,8 +162,30 @@ const TahlilDetay = ({ route, navigation }) => {
         return { color: "red" }; // Yüksek
       case "↔":
       default:
-        return { color: "blue" }; // Normal
+        return { color: "blue" }; // Aynı
     }
+  };
+   // Tahlil silme işlemi
+   const handleDelete = async () => {
+    try {
+      const docRef = doc(db, "tahliller", tahlilId);
+      await deleteDoc(docRef);
+      Alert.alert("Başarılı", "Tahlil başarıyla silindi.");
+      navigation.navigate("TahlilList"); // Silme işlemi sonrası geri git
+    } catch (error) {
+      console.error("Tahlil silinirken hata oluştu:", error);
+      Alert.alert("Hata", "Tahlil silinirken bir hata oluştu.");
+    }
+  };
+  const confirmDelete = () => { //tahlil silme onay kısmı
+    Alert.alert(
+      "Silme Onayı",
+      "Bu tahlil verisini silmek istediğinizden emin misiniz?",
+      [
+        { text: "Hayır", style: "cancel" },
+        { text: "Evet", onPress: handleDelete }
+      ]
+    );
   };
 
   if (!tahlilData || !guides.length) {
@@ -161,79 +215,88 @@ const TahlilDetay = ({ route, navigation }) => {
       <Text style={styles.value}>{tahlilData.gender}</Text>
 
       <Text style={styles.label}>Serum Tipi ve Değerleri:</Text>
-      {tahlilData.serumTypes.map((serum, index) => (
-        <View key={index} style={styles.serumContainer}>
-          <Text style={styles.serumText}>
-            {serum.type}: {serum.value} mg/dl
-          </Text>
+      {tahlilData.serumTypes.map((serum, index) => {
+  // Serum tipi için en güncel bir önceki tahlili buluyoruz
+          let previousValue = "N/A";
+          
+          for (let i = previousTahlils.length - 1; i >= 0; i--) {
+            const prevSerum = previousTahlils[i].serumTypes.find((s) => s.type === serum.type);
+            if (prevSerum) {
+              previousValue = prevSerum.value;
+              break;
+            }
+          }
+
+          const changeArrow = previousValue !== "N/A" ? calculateChange(serum.value, previousValue) : "";
+
+          return (
+            <View key={index} style={styles.serumContainer}>
+              <Text style={styles.serumText}>
+                {serum.type}: {serum.value} mg/dl{" "}
+                {changeArrow && <Text style={getArrowStyle(changeArrow)}>{changeArrow}</Text>}
+              </Text>
+              {previousValue !== "N/A" && <Text>Önceki Değer: {previousValue} mg/dl</Text>}
+            </View>
+          );
+        })}
+      <Text style={styles.label}>Kılavuzlara Göre Değerlendirmeler:</Text>
+      {evaluationResults.map((result, index) => (
+        <View key={index} style={styles.resultContainer}>
+          <Text style={styles.guideName}>{result.guideName}</Text>
+          <Text style={styles.ageRangeText}>Yaş Aralığı: {result.ageRange}</Text>
+          {result.evaluations.map((evaluation, evalIndex) => (
+            <View key={evalIndex} style={styles.evaluationContainer}>
+              <Text style={styles.serumTypeText}>Serum Tipi: {evaluation.serumType}</Text>
+              {evaluation.geoMean && (
+                <Text>
+                  GeoMean: {evaluation.geoMean}{" "}
+                  <Text style={getArrowStyle(evaluation.geoMeanArrow)}>
+                    {evaluation.geoMeanArrow}
+                  </Text>
+                </Text>
+              )}
+              {evaluation.arithMean && (
+                <Text>
+                  ArithMean: {evaluation.arithMean}{" "}
+                  <Text style={getArrowStyle(evaluation.arithMeanArrow)}>
+                    {evaluation.arithMeanArrow}
+                  </Text>
+                </Text>
+              )}
+              {evaluation.mean && (
+                <Text>
+                  Mean: {evaluation.mean}{" "}
+                  <Text style={getArrowStyle(evaluation.meanArrow)}>
+                    {evaluation.meanArrow}
+                  </Text>
+                </Text>
+              )}
+              {evaluation.minmax && (
+                <Text>
+                  Min-Max: {evaluation.minmax}{" "}
+                  <Text style={getArrowStyle(evaluation.minmaxArrow)}>
+                    {evaluation.minmaxArrow}
+                  </Text>
+                </Text>
+              )}
+              {evaluation.interval && (
+                <Text>
+                  Interval: {evaluation.interval}{" "}
+                  <Text style={getArrowStyle(evaluation.intervalArrow)}>
+                    {evaluation.intervalArrow}
+                  </Text>
+                </Text>
+              )}
+            </View>
+          ))}
         </View>
       ))}
-
-<Text style={styles.label}>Kılavuzlara Göre Değerlendirmeler:</Text>
-{evaluationResults.map((result, index) => (
-  <View key={index} style={styles.resultContainer}>
-    <Text style={styles.guideName}>{result.guideName}</Text>
-    <Text style={styles.ageRangeText}>Yaş Aralığı: {result.ageRange}</Text>
-    {result.evaluations.map((evaluation, evalIndex) => (
-      <View key={evalIndex} style={styles.evaluationContainer}>
-        <Text style={styles.serumTypeText}>Serum Tipi: {evaluation.serumType}</Text>
-
-        {/* GeoMean: Eğer geoMean değeri varsa, sadece o zaman göstereceğiz */}
-        {evaluation.geoMean && (
-          <Text>
-            GeoMean: {evaluation.geoMean}{" "}
-            <Text style={getArrowStyle(evaluation.geoMeanArrow)}>
-              {evaluation.geoMeanArrow}
-            </Text>
-          </Text>
-        )}
-
-        {/* ArithMean: Eğer arithMean değeri varsa, sadece o zaman göstereceğiz */}
-        {evaluation.arithMean && (
-          <Text>
-            ArithMean: {evaluation.arithMean}{" "}
-            <Text style={getArrowStyle(evaluation.arithMeanArrow)}>
-              {evaluation.arithMeanArrow}
-            </Text>
-          </Text>
-        )}
-
-        {/* Mean: Eğer mean değeri varsa, sadece o zaman göstereceğiz */}
-        {evaluation.mean && (
-          <Text>
-            Mean: {evaluation.mean}{" "}
-            <Text style={getArrowStyle(evaluation.meanArrow)}>
-              {evaluation.meanArrow}
-            </Text>
-          </Text>
-        )}
-        {/* MinMax: Eğer min max değerleri varsa, sadece o zaman göstereceğiz */}
-        {evaluation.minmax && (
-          <Text>
-            Min-Max: {evaluation.minmax}{" "}
-            <Text style={getArrowStyle(evaluation.minmaxArrow)}>
-              {evaluation.minmaxArrow}
-            </Text>
-          </Text>
-        )}
-
-        {/* Interval: Eğer interval değeri varsa, sadece o zaman göstereceğiz */}
-        {evaluation.interval && (
-          <Text>
-            Interval: {evaluation.interval}{" "}
-            <Text style={getArrowStyle(evaluation.intervalArrow)}>
-              {evaluation.intervalArrow}
-            </Text>
-          </Text>
-        )}
-      </View>
-    ))}
-  </View>
-))}
-
+      <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
+        <Text style={styles.ButtonText}>Tahlili Sil</Text>
+      </TouchableOpacity>
 
       <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Geri Dön</Text>
+        <Text style={styles.ButtonText}>Geri Dön</Text>
       </TouchableOpacity>
     </ScrollView>
   );
@@ -289,7 +352,13 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     marginTop: 20,
   },
-  backButtonText: {
+  deleteButton: {
+    backgroundColor: "red",
+    padding: 10,
+    borderRadius: 8,
+    marginTop: 20,
+  },
+  ButtonText: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",

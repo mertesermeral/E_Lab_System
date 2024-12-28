@@ -55,7 +55,7 @@ const KilavuzGuncelle = ({ route, navigation }) => {
         await updateDoc(docRef, { data: updatedData });
 
         Alert.alert("Başarılı", "Yeni satır başarıyla eklendi!");
-        navigation.goBack(); // Bir önceki sayfaya dön
+        navigation.navigate("KilavuzTablosu", { guideId: guideId });
       } else {
         Alert.alert("Hata", "Kılavuz bulunamadı!");
       }
