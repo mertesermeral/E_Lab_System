@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TextInput, Button, StyleSheet, ScrollView, Alert, KeyboardAvoidingView, Platform, TouchableOpacity } from "react-native";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc } from "firebase/firestore";
+import { Picker } from '@react-native-picker/picker'; // Picker importu
 
 const KilavuzGuncelle = ({ route, navigation }) => {
   const { guideId } = route.params;
@@ -66,111 +67,121 @@ const KilavuzGuncelle = ({ route, navigation }) => {
   };
 
   return (
-     <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+    >
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <Text style={styles.title}>Yeni Satır Ekle</Text>
+
+        <Text style={styles.inputLabel}>Yaş (Ay)</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.ageRange}
+          onChangeText={(value) => handleInputChange("ageRange", value)}
+        />
+
+        <Text style={styles.inputLabel}>Geo Mean Min</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.geoMeanMin}
+          onChangeText={(value) => handleInputChange("geoMeanMin", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Geo Mean Max</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.geoMeanMax}
+          onChangeText={(value) => handleInputChange("geoMeanMax", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Mean Min</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.meanMin}
+          onChangeText={(value) => handleInputChange("meanMin", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Mean Max</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.meanMax}
+          onChangeText={(value) => handleInputChange("meanMax", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Arith Mean Min</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.arithMeanMin}
+          onChangeText={(value) => handleInputChange("arithMeanMin", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Arith Mean Max</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.arithMeanMax}
+          onChangeText={(value) => handleInputChange("arithMeanMax", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Min</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.min}
+          onChangeText={(value) => handleInputChange("min", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Max</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.max}
+          onChangeText={(value) => handleInputChange("max", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>%95 Confidence Interval Min</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.intervalMin}
+          onChangeText={(value) => handleInputChange("intervalMin", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>%95 Confidence Interval Max</Text>
+        <TextInput
+          style={styles.input}
+          value={newRow.intervalMax}
+          onChangeText={(value) => handleInputChange("intervalMax", value)}
+          keyboardType="numeric"
+        />
+
+        <Text style={styles.inputLabel}>Serum Tipi</Text>
+        <Picker
+          selectedValue={newRow.serumType}
+          onValueChange={(value) => handleInputChange("serumType", value)}
         >
-    <ScrollView contentContainerStyle={styles.scrollContainer}>
-      <Text style={styles.title}>Yeni Satır Ekle</Text>
+          <Picker.Item label="Serum Tipi Seçin" value="" enabled={false} />
+          <Picker.Item label="IgG" value="IgG" />
+          <Picker.Item label="IgG1" value="IgG1" />
+          <Picker.Item label="IgG2" value="IgG2" />
+          <Picker.Item label="IgG3" value="IgG3" />
+          <Picker.Item label="IgG4" value="IgG4" />
+          <Picker.Item label="IgA" value="IgA" />
+          <Picker.Item label="IgA1" value="IgA1" />
+          <Picker.Item label="IgA2" value="IgA2" />
+          <Picker.Item label="IgM" value="IgM" />
+        </Picker>
 
-      <Text style={styles.inputLabel}>Yaş (Ay)</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.ageRange}
-        onChangeText={(value) => handleInputChange("ageRange", value)}
-      />
-
-      <Text style={styles.inputLabel}>Geo Mean Min</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.geoMeanMin}
-        onChangeText={(value) => handleInputChange("geoMeanMin", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Geo Mean Max</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.geoMeanMax}
-        onChangeText={(value) => handleInputChange("geoMeanMax", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Mean Min</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.meanMin}
-        onChangeText={(value) => handleInputChange("meanMin", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Mean Max</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.meanMax}
-        onChangeText={(value) => handleInputChange("meanMax", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Arith Mean Min</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.arithMeanMin}
-        onChangeText={(value) => handleInputChange("arithMeanMin", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Arith Mean Max</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.arithMeanMax}
-        onChangeText={(value) => handleInputChange("arithMeanMax", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Min</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.min}
-        onChangeText={(value) => handleInputChange("min", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Max</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.max}
-        onChangeText={(value) => handleInputChange("max", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>%95 Confidence Interval Min</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.intervalMin}
-        onChangeText={(value) => handleInputChange("intervalMin", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>%95 Confidence Interval Max</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.intervalMax}
-        onChangeText={(value) => handleInputChange("intervalMax", value)}
-        keyboardType="numeric"
-      />
-
-      <Text style={styles.inputLabel}>Serum Tipi</Text>
-      <TextInput
-        style={styles.input}
-        value={newRow.serumType}
-        onChangeText={(value) => handleInputChange("serumType", value)}
-      />
-
-      <TouchableOpacity style={styles.saveButton} onPress={handleAddRow}>
-        <Text style={styles.saveButtonText}>Ekle</Text>
-      </TouchableOpacity>
-    </ScrollView>
+        <TouchableOpacity style={styles.saveButton} onPress={handleAddRow}>
+          <Text style={styles.saveButtonText}>Ekle</Text>
+        </TouchableOpacity>
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 };
