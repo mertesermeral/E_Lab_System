@@ -77,43 +77,64 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    padding: 20,
+    backgroundColor: "#f7f7f7", // Açık gri arka plan
+  },
+  logoContainer: {
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  logo: {
+    width: 100,
+    height: 100, // Eğer bir logo kullanılacaksa
+    resizeMode: "contain",
+    marginBottom: 20,
   },
   title: {
     fontSize: 24,
     fontWeight: "bold",
+    color: "#0058a3", // Ana renk
+    textAlign: "center",
     marginBottom: 20,
   },
   input: {
-    width: "80%",
-    height: 50,
-    backgroundColor: "#fff",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 15,
+    width: "100%",
     borderWidth: 1,
     borderColor: "#ccc",
+    borderRadius: 8,
+    backgroundColor: "#fff",
+    padding: 10,
+    fontSize: 16,
+    marginBottom: 15,
   },
   button: {
-    width: "80%",
-    height: 50,
-    backgroundColor: "#6200ee",
+    width: "100%",
+    backgroundColor: "#0058a3", // Ana buton rengi
+    padding: 15,
     borderRadius: 8,
-    justifyContent: "center",
     alignItems: "center",
+    marginVertical: 10,
   },
   buttonText: {
     color: "#fff",
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
   },
-  switchButton: {
-    marginTop: 10,
+  link: {
+    marginTop: 15,
   },
-  switchButtonText: {
-    color: "#6200ee",
-    fontSize: 16,
+  linkText: {
+    color: "#0058a3", // Link rengi
+    fontSize: 14,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
   },
+  errorText: {
+    color: "#dc143c", // Uyarı rengi
+    fontSize: 14,
+    textAlign: "center",
+    marginBottom: 15,
+  },
 });
 
 export default LoginScreen;

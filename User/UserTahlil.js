@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet, ScrollView, Alert, TouchableOpacity } from "react-native";
 import { db } from "../firebase";
-import { doc, getDoc, collection, getDocs, deleteDoc } from "firebase/firestore";
+import { doc, getDoc, collection, getDocs } from "firebase/firestore";
 
 // Serum değerini değerlendirme fonksiyonu
 const evaluateSerumValue = (serumValue, min, max) => {

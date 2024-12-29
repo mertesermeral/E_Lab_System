@@ -49,20 +49,32 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
+    color: "#0058a3", // Ana başlık rengi
     textAlign: "center",
+    marginBottom: 20,
+
   },
   listItem: {
+    width: "100%",
+    backgroundColor: "#0058a3", // Ana buton rengi
     padding: 15,
-    marginVertical: 8,
-    backgroundColor: "#f0f0f0",
     borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 10,
   },
   listItemText: {
-    fontSize: 18,
-    fontWeight: "500",
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 10,
+    marginBottom: 20,
   },
 });
 

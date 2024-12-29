@@ -1,12 +1,30 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TouchableOpacity, FlatList, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, FlatList, StyleSheet, Alert, BackHandler } from "react-native";
 import { db, auth } from "../firebase"; // Hem db hem de auth import edildi
 import { collection, getDocs } from "firebase/firestore";
+import { signOut } from "firebase/auth";
 
 const UserTahlilList = ({ navigation }) => {
   const [tahliller, setTahliller] = useState([]);
   const [userTc, setUserTc] = useState("");
-
+const handleLogout = (navigation) => {
+  
+    signOut(auth)
+      .then(() => {
+        Alert.alert("Uyarı", "Oturumdan çıkmak istiyor musunuz?", [
+          {
+            text: "Hayır",
+            onPress: () => null,
+            style: "cancel",
+          },
+          { text: "Evet", onPress: () => navigation.replace("Home") },
+        ])
+      })
+      .catch((error) => {
+        console.error("Çıkış yapılamadı:", error);
+        Alert.alert("Hata", "Çıkış yapılırken bir hata oluştu.");
+      });
+  };
   useEffect(() => {
     const fetchTahliller = async () => {
       try {
@@ -33,6 +51,31 @@ const UserTahlilList = ({ navigation }) => {
     fetchTahliller();
   }, []);
 
+  // Geri tuşu kontrolü
+  useEffect(() => {
+      const backAction = () => {
+        if (navigation.isFocused()) { // Sadece bu ekran odaktaysa çalışır
+          Alert.alert("Uyarı", "Oturumdan çıkmak istiyor musunuz?", [
+            {
+              text: "Hayır",
+              onPress: () => null,
+              style: "cancel",
+            },
+            {
+              text: "Evet",
+              onPress: () => navigation.replace("Home")
+            },
+          ]);
+          return true;
+        }
+        return false; // Alt sayfalarda varsayılan davranışı koru
+      };
+  
+      const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
+  
+      return () => backHandler.remove();
+    }, [navigation]);
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Tahlil Listesi</Text>
@@ -52,6 +95,12 @@ const UserTahlilList = ({ navigation }) => {
       ) : (
         <Text style={styles.noData}>Yükleniyor...</Text>
       )}
+      <TouchableOpacity
+        style={styles.logoutButton}
+        onPress={() => handleLogout(navigation)}
+      >
+        <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
+      </TouchableOpacity>
     </View>
   );
 };

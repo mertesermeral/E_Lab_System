@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import {Image, View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AdminLoginScreen from "./Login/AdminLoginScreen";
@@ -19,18 +19,24 @@ const Stack = createStackNavigator();
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
+      <Image
+        source={require("./assets/lab-technician.png")}
+        style={styles.icon}
+      />
+      <Text style={styles.title}>E-Lab Sistem</Text>
       <Text style={styles.title}>Hoşgeldiniz</Text>
+
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("AdminLogin")}
       >
-        <Text style={styles.buttonText}>Admin Girişi</Text>
+        <Text style={styles.buttonText}>Doktor Girişi</Text>
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("UserLogin")}
       >
-        <Text style={styles.buttonText}>Kullanıcı Girişi</Text>
+        <Text style={styles.buttonText}>Hasta Girişi</Text>
       </TouchableOpacity>
     </View>
   );
@@ -115,27 +121,48 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
+    padding: 20,
+    backgroundColor: "#f7f7f7", // Hafif gri bir arka plan
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 40,
+    color: "#0058a3", // Ana renk
+    textAlign: "center",
+    marginBottom: 30,
   },
   button: {
-    width: "80%",
-    height: 50,
-    backgroundColor: "#6200ee",
+    width: "100%",
+    backgroundColor: "#0058a3", // Ana buton rengi
+    padding: 15,
     borderRadius: 8,
-    justifyContent: "center",
     alignItems: "center",
-    marginVertical: 10,
+    marginBottom: 15,
+    shadowColor: "#000", // Hafif gölge efekti
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2, // Android için gölge efekti
   },
   buttonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
   },
+  link: {
+    marginTop: 15,
+  },
+  linkText: {
+    color: "#0058a3", // Link rengi
+    fontSize: 16,
+    fontWeight: "bold",
+    textDecorationLine: "underline",
+    textAlign: "center",
+  },
 });
+
 
 export default App;
