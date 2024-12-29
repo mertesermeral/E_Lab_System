@@ -10,7 +10,7 @@ import {
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 
-const LoginScreen = () => {
+const LoginScreen = ({navigation}) => {
   const [tc, setTc] = useState("");
   const [password, setPassword] = useState("");
   const [isRegistering, setIsRegistering] = useState(false); // Kayıt yapılıp yapılmadığını kontrol eden durum
@@ -20,6 +20,7 @@ const LoginScreen = () => {
       const email = `${tc}@elab.com`; // TC kimlik numarasını email formatına çeviriyoruz
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert("Başarılı", "Giriş başarılı!");
+      navigation.navigate("UserTahlilList"); // Kullanıcı için yönlendirme
     } catch (error) {
       console.error("Hata:", error);
       Alert.alert("Hata", "Giriş başarısız! TC veya şifre yanlış.");
@@ -43,6 +44,7 @@ const LoginScreen = () => {
       <Text style={styles.title}>{isRegistering ? "E-Laboratuvar Kayıt" : "E-Laboratuvar Giriş"}</Text>
       <TextInput
         style={styles.input}
+        maxLength={11}
         placeholder="TC Kimlik Numarası"
         keyboardType="numeric"
         value={tc}

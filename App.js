@@ -12,6 +12,8 @@ import TahlilEkle from "./Admin/TahlilEkle";
 import KilavuzGuncelle from "./Admin/KilavuzGuncelle";
 import TahlilList from "./Admin/TahlilList";
 import TahlilDetay from "./Admin/TahlilDetay";
+import UserTahlil from "./User/UserTahlil";
+import UserTahlilList from "./User/UserTahlilList";
 const Stack = createStackNavigator();
 
 const HomeScreen = ({ navigation }) => {
@@ -51,6 +53,16 @@ const App = () => {
         <Stack.Screen
           name="UserLogin"
           component={UserLoginScreen}
+          options={{ headerShown: false }}
+        />
+        <Stack.Screen
+          name="UserTahlil"
+          component={UserTahlil}
+          options={{ headerShown: false }}
+        />
+         <Stack.Screen
+          name="UserTahlilList"
+          component={UserTahlilList}
           options={{ headerShown: false }}
         />
         <Stack.Screen
