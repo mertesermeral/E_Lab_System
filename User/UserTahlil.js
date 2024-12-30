@@ -173,28 +173,6 @@ const TahlilDetay = ({ route, navigation }) => {
     }
   };
 
-  const handleDelete = async () => {
-    try {
-      const docRef = doc(db, "tahliller", tahlilId);
-      await deleteDoc(docRef);
-      Alert.alert("Başarılı", "Tahlil başarıyla silindi.");
-      navigation.goBack();
-    } catch (error) {
-      console.error("Tahlil silinirken hata oluştu:", error);
-      Alert.alert("Hata", "Tahlil silinirken bir hata oluştu.");
-    }
-  };
-
-  const confirmDelete = () => {
-    Alert.alert(
-      "Silme Onayı",
-      "Bu tahlil verisini silmek istediğinizden emin misiniz?",
-      [
-        { text: "Hayır", style: "cancel" },
-        { text: "Evet", onPress: handleDelete }
-      ]
-    );
-  };
 
   if (!tahlilData || !guides.length) {
     return <Text>Yükleniyor...</Text>;
