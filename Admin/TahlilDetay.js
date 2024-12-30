@@ -164,12 +164,12 @@ const TahlilDetay = ({ route, navigation }) => {
   const getArrowStyle = (arrow) => {
     switch (arrow) {
       case "↓":
-        return { color: "green" };
+        return { color: "green",fontWeight: "bold",fontSize:"20"};
       case "↑":
-        return { color: "red" };
+        return { color: "red",fontWeight: "bold",fontSize:"20"};
       case "↔":
       default:
-        return { color: "blue" };
+        return { color: "blue",fontWeight: "bold",fontSize:"20"};
     }
   };
 
@@ -210,18 +210,23 @@ const TahlilDetay = ({ route, navigation }) => {
   return (
     <ScrollView contentContainerStyle={styles.scrollContainer}>
       <Text style={styles.title}>Tahlil Detayı</Text>
+      <View style={styles.box}>
       <Text style={styles.label}>Adı Soyadı:</Text>
       <Text style={styles.value}>{tahlilData.fullName}</Text>
-
+      </View>
+      <View style={styles.box}>
       <Text style={styles.label}>T.C. Kimlik No:</Text>
       <Text style={styles.value}>{tahlilData.tcNumber}</Text>
-
+      </View>
+      <View style={styles.box}>
       <Text style={styles.label}>Yaş (Ay):</Text>
       <Text style={styles.value}>{tahlilData.age}</Text>
-
+      </View>
+      <View style={styles.box}>
       <Text style={styles.label}>Cinsiyet:</Text>
       <Text style={styles.value}>{tahlilData.gender}</Text>
-
+      </View>
+      <View style={styles.box}>
       <Text style={styles.label}>Serum Tipi ve Değerleri:</Text>
       {tahlilData.serumTypes.map((serum, index) => {
         let previousValue = "N/A";
@@ -238,83 +243,93 @@ const TahlilDetay = ({ route, navigation }) => {
 
         return (
           <View key={index} style={styles.serumContainer}>
-            <Text style={styles.serumText
+            <Text style={styles.value
             }>
             {serum.type}: {serum.value} mg/dl{" "}
             {changeArrow && <Text style={getArrowStyle(changeArrow)}>{changeArrow}</Text>}
           </Text>
-          {previousValue !== "N/A" && <Text>Önceki Değer: {previousValue} mg/dl</Text>}
+          {previousValue !== "N/A" && <Text style={styles.value}>Önceki Değer: {previousValue} mg/dl</Text>}
         </View>
       );
     })}
+    </View>
+<Text style={styles.subTitle}>Kılavuzlara Göre Değerlendirmeler</Text>
+{evaluationResults.reduce((acc, result) => {
+  if (
+    !acc.some(
+      (item) => item.guideName === result.guideName && item.ageRange === result.ageRange
+    )
+  ) {
+    acc.push(result);
+  }
+  return acc;
+}, []).map((result, index) => (
+  <View key={index} style={styles.tableContainer}>
+    <Text style={styles.tableHeader}>{result.guideName}</Text>
+    <Text style={styles.tableSubHeader}>Yaş Aralığı: {result.ageRange}</Text>
+    <View style={styles.tableRowHeader}>
+      <Text style={styles.tableCellHeader}>Serum Tipi</Text>
+      {result.evaluations.some((e) => e.geoMean) && <Text style={styles.tableCellHeader}>GeoMean</Text>}
+      {result.evaluations.some((e) => e.arithMean) && <Text style={styles.tableCellHeader}>ArithMean</Text>}
+      {result.evaluations.some((e) => e.mean) && <Text style={styles.tableCellHeader}>Mean</Text>}
+      {result.evaluations.some((e) => e.minmax) && <Text style={styles.tableCellHeader}>Min-Max</Text>}
+      {result.evaluations.some((e) => e.interval) && <Text style={styles.tableCellHeader}>Interval</Text>}
+    </View>
+    {evaluationResults
+      .filter(
+        (r) =>
+          r.guideName === result.guideName && r.ageRange === result.ageRange
+      )
+      .flatMap((r) => r.evaluations)
+      .map((evaluation, evalIndex) => (
+        <View key={evalIndex} style={styles.tableRow}>
+          <Text style={styles.tableCell}>{evaluation.serumType}</Text>
+          {evaluation.geoMean && (
+            <Text style={styles.tableCell}>
+              {evaluation.geoMean}{" "}
+              <Text style={getArrowStyle(evaluation.geoMeanArrow)}>
+                {evaluation.geoMeanArrow}
+              </Text>
+            </Text>
+          )}
+          {evaluation.arithMean && (
+            <Text style={styles.tableCell}>
+              {evaluation.arithMean}{" "}
+              <Text style={getArrowStyle(evaluation.arithMeanArrow)}>
+                {evaluation.arithMeanArrow}
+              </Text>
+            </Text>
+          )}
+          {evaluation.mean && (
+            <Text style={styles.tableCell}>
+              {evaluation.mean}{" "}
+              <Text style={getArrowStyle(evaluation.meanArrow)}>
+                {evaluation.meanArrow}
+              </Text>
+            </Text>
+          )}
+          {evaluation.minmax && (
+            <Text style={styles.tableCell}>
+              {evaluation.minmax}{" "}
+              <Text style={getArrowStyle(evaluation.minmaxArrow)}>
+                {evaluation.minmaxArrow}
+              </Text>
+            </Text>
+          )}
+          {evaluation.interval && (
+            <Text style={styles.tableCell}>
+              {evaluation.interval}{" "}
+              <Text style={getArrowStyle(evaluation.intervalArrow)}>
+                {evaluation.intervalArrow}
+              </Text>
+            </Text>
+          )}
+        </View>
+      ))}
+  </View>
+  
+))}
 
-    <Text style={styles.label}>Kılavuzlara Göre Değerlendirmeler:</Text>
-    {evaluationResults.reduce((acc, result, index) => {
-      if (
-        !acc.some(
-          (item) => item.guideName === result.guideName && item.ageRange === result.ageRange
-        )
-      ) {
-        acc.push(result);
-      }
-      return acc;
-    }, []).map((result, index) => (
-      <View key={index} style={styles.resultContainer}>
-        <Text style={styles.guideName}>{result.guideName}</Text>
-        <Text style={styles.ageRangeText}>Yaş Aralığı: {result.ageRange}</Text>
-        {evaluationResults
-          .filter(
-            (r) =>
-              r.guideName === result.guideName && r.ageRange === result.ageRange
-          )
-          .flatMap((r) => r.evaluations)
-          .map((evaluation, evalIndex) => (
-            <View key={evalIndex} style={styles.evaluationContainer}>
-              <Text style={styles.serumTypeText}>Serum Tipi: {evaluation.serumType}</Text>
-              {evaluation.geoMean && (
-                <Text>
-                  GeoMean: {evaluation.geoMean}{" "}
-                  <Text style={getArrowStyle(evaluation.geoMeanArrow)}>
-                    {evaluation.geoMeanArrow}
-                  </Text>
-                </Text>
-              )}
-              {evaluation.arithMean && (
-                <Text>
-                  ArithMean: {evaluation.arithMean}{" "}
-                  <Text style={getArrowStyle(evaluation.arithMeanArrow)}>
-                    {evaluation.arithMeanArrow}
-                  </Text>
-                </Text>
-              )}
-              {evaluation.mean && (
-                <Text>
-                  Mean: {evaluation.mean}{" "}
-                  <Text style={getArrowStyle(evaluation.meanArrow)}>
-                    {evaluation.meanArrow}
-                  </Text>
-                </Text>
-              )}
-              {evaluation.minmax && (
-                <Text>
-                  Min-Max: {evaluation.minmax}{" "}
-                  <Text style={getArrowStyle(evaluation.minmaxArrow)}>
-                    {evaluation.minmaxArrow}
-                  </Text>
-                </Text>
-              )}
-              {evaluation.interval && (
-                <Text>
-                  Interval: {evaluation.interval}{" "}
-                  <Text style={getArrowStyle(evaluation.intervalArrow)}>
-                    {evaluation.intervalArrow}
-                  </Text>
-                </Text>
-              )}
-            </View>
-          ))}
-      </View>
-    ))}
 
     <TouchableOpacity style={styles.deleteButton} onPress={confirmDelete}>
       <Text style={styles.ButtonText}>Tahlili Sil</Text>
@@ -333,43 +348,40 @@ scrollContainer: {
   backgroundColor: "#fff",
 },
 title: {
-  fontSize: 24,
-  fontWeight: "bold",
-  textAlign: "center",
-  marginBottom: 20,
+  fontSize: 28,
+    fontWeight: "bold",
+    color: "#0058a3", // Ana başlık rengi
+    textAlign: "center",
+    marginBottom: 20,
+},
+subTitle: {
+  fontSize: 23,
+    fontWeight: "bold",
+    color: "#0058a3", // Ana başlık rengi
+    textAlign: "center",
+    marginBottom: 10,
+    marginVertical: 10,
 },
 label: {
+  color: "#fff",
   fontSize: 16,
   fontWeight: "bold",
   marginVertical: 5,
 },
 value: {
+  color: "#fff",
   fontSize: 16,
   marginBottom: 15,
 },
 serumContainer: {
   marginVertical: 5,
-},
-serumText: {
-  fontSize: 16,
-},
-resultContainer: {
-  marginVertical: 15,
-},
-guideName: {
-  fontSize: 18,
-  fontWeight: "bold",
-  marginVertical: 5,
-},
-ageRangeText: {
-  fontSize: 16,
-  marginVertical: 5,
-},
-evaluationContainer: {
-  marginVertical: 5,
-},
-serumTypeText: {
-  fontSize: 16,
+  width: "100%",
+  backgroundColor: "#0058a3", // Ana buton rengi
+  padding: "auto",
+  borderRadius: 8,
+  alignItems: "center",
+  
+      
 },
 backButton: {
   backgroundColor: "#6200ee",
@@ -387,6 +399,64 @@ ButtonText: {
   color: "#fff",
   textAlign: "center",
   fontWeight: "bold",
+},
+box: {
+  width: "100%",
+  backgroundColor: "#0058a3", // Ana buton rengi
+  padding: "auto",
+  borderRadius: 8,
+  alignItems: "center",
+  marginVertical: 10,
+  marginBottom: 15,
+  borderWidth: 1,
+  borderColor: "#ddd",    
+},
+//yeni ekleme
+tableContainer: {
+  marginBottom: 20,
+  borderWidth: 1,
+  borderColor: "#ccc",
+  borderRadius: 8,
+  backgroundColor: "#f9f9f9",
+  padding: 10,
+},
+tableHeader: {
+  fontSize: 20,
+  fontWeight: "bold",
+  textAlign: "center",
+  color: "#0058a3", // Başlık rengi
+  marginBottom: 10,
+},
+tableSubHeader: {
+  fontSize: 16,
+  fontWeight: "600",
+  marginBottom: 10,
+  color: "#0058a3", // Alt başlık rengi
+},
+tableRowHeader: {
+  flexDirection: "row",
+  backgroundColor: "#0058a3", // Tablo başlık arka plan rengi
+  paddingVertical: 8,
+  borderRadius: 5,
+},
+tableRow: {
+  flexDirection: "row",
+  borderBottomWidth: 1,
+  borderColor: "#ccc",
+  paddingVertical: 8,
+},
+tableCellHeader: {
+  flex: 1,
+  fontWeight: "bold",
+  textAlign: "center",
+  fontSize: 14,
+  color: "#fff", // Başlık metin rengi
+},
+tableCell: {
+  flex: 1,
+  textAlign: "center",
+  fontSize: 14,
+  color: "#333",
 },
 });
 

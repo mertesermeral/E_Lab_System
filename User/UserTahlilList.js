@@ -88,7 +88,7 @@ const handleLogout = (navigation) => {
               style={styles.listItem}
               onPress={() => navigation.navigate("UserTahlil", { tahlilId: item.id })}
             >
-              <Text>{item.fullName} - {item.reportDate}</Text>
+              <Text style={styles.listItemText}>{item.fullName} - {item.reportDate}</Text>
             </TouchableOpacity>
           )}
         />
@@ -112,16 +112,25 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
+    color: "#0058a3", // Ana başlık rengi
     textAlign: "center",
     marginBottom: 20,
+
   },
   listItem: {
+    width: "100%",
+    backgroundColor: "#0058a3", // Ana buton rengi
     padding: 15,
-    marginVertical: 8,
-    backgroundColor: "#f0f0f0",
     borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 10,
+  },
+  listItemText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
   },
   noData: {
     textAlign: "center",
