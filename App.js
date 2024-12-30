@@ -1,5 +1,5 @@
 import React from "react";
-import {Image, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Image, View, Text, TouchableOpacity, StyleSheet, Dimensions } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import AdminLoginScreen from "./Login/AdminLoginScreen";
@@ -14,16 +14,22 @@ import TahlilList from "./Admin/TahlilList";
 import TahlilDetay from "./Admin/TahlilDetay";
 import UserTahlil from "./User/UserTahlil";
 import UserTahlilList from "./User/UserTahlilList";
+import Header from "./Header";
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 const Stack = createStackNavigator();
+const { width} = Dimensions.get("window");
 
 const HomeScreen = ({ navigation }) => {
   return (
     <View style={styles.container}>
       <Image
         source={require("./assets/lab-technician.png")}
-        style={styles.icon}
+        style={[
+          
+          { width: width, height:width}, // Dinamik boyutlandırma
+        ]}
       />
-      <Text style={styles.title}>E-Lab Sistem</Text>
+      <Text style={styles.title}>E-Laboratuvar Sistemi</Text>
       <Text style={styles.title}>Hoşgeldiniz</Text>
 
       <TouchableOpacity
@@ -31,12 +37,14 @@ const HomeScreen = ({ navigation }) => {
         onPress={() => navigation.navigate("AdminLogin")}
       >
         <Text style={styles.buttonText}>Doktor Girişi</Text>
+        <MaterialCommunityIcons name="doctor" size={24} color="white" />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
         onPress={() => navigation.navigate("UserLogin")}
       >
         <Text style={styles.buttonText}>Hasta Girişi</Text>
+        <MaterialCommunityIcons name="emoticon-sick-outline" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );
@@ -45,7 +53,15 @@ const HomeScreen = ({ navigation }) => {
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="Home">
+      <Stack.Navigator
+        initialRouteName="Home"
+        screenOptions={({ route, navigation }) => ({
+          header: () =>
+            ["Home", "AdminLogin", "UserLogin"].includes(route.name) ? null : (
+              <Header navigation={navigation} />
+            ),
+        })}
+      >
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -64,22 +80,22 @@ const App = () => {
         <Stack.Screen
           name="UserTahlil"
           component={UserTahlil}
-          options={{ headerShown: false }}
+          options={{ title: "Tahlil Detayı" }}
         />
-         <Stack.Screen
+        <Stack.Screen
           name="UserTahlilList"
           component={UserTahlilList}
-          options={{ headerShown: false }}
+          options={{ title: "Tahlil Listesi" }}
         />
         <Stack.Screen
           name="AdminDashboard"
           component={AdminDashboard}
-          options={{ headerShown: false }}
+          options={{ title: "Admin Paneli" }}
         />
         <Stack.Screen
           name="Kilavuz"
-          component={Kilavuz} // GuideCreation'ı ekledik
-          options={{ headerShown: true, title: "Kılavuz Oluştur" }}
+          component={Kilavuz}
+          options={{ title: "Kılavuz Oluştur" }}
         />
         <Stack.Screen
           name="KilavuzList"
@@ -96,17 +112,17 @@ const App = () => {
           component={TahlilEkle}
           options={{ title: "Tahlil Ekle" }}
         />
-      <Stack.Screen
+        <Stack.Screen
           name="KilavuzGuncelle"
           component={KilavuzGuncelle}
           options={{ title: "Kılavuz Güncelle" }}
         />
-      <Stack.Screen
+        <Stack.Screen
           name="TahlilList"
           component={TahlilList}
           options={{ title: "Tahlil Listesi" }}
         />
-      <Stack.Screen
+        <Stack.Screen
           name="TahlilDetay"
           component={TahlilDetay}
           options={{ title: "Tahlil Detayı" }}
@@ -151,18 +167,7 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
-  },
-  link: {
-    marginTop: 15,
-  },
-  linkText: {
-    color: "#0058a3", // Link rengi
-    fontSize: 16,
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-    textAlign: "center",
-  },
+  },  
 });
-
 
 export default App;

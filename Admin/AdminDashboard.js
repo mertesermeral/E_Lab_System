@@ -1,27 +1,9 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert, BackHandler } from "react-native";
-import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { View, Text, TouchableOpacity, StyleSheet, Alert, BackHandler, Image} from "react-native";
+
 
 const AdminDashboard = ({ navigation }) => {
-  const handleLogout = (navigation) => {
   
-    signOut(auth)
-      .then(() => {
-        Alert.alert("Uyarı", "Oturumdan çıkmak istiyor musunuz?", [
-          {
-            text: "Hayır",
-            onPress: () => null,
-            style: "cancel",
-          },
-          { text: "Evet", onPress: () => navigation.replace("Home") },
-        ])
-      })
-      .catch((error) => {
-        console.error("Çıkış yapılamadı:", error);
-        Alert.alert("Hata", "Çıkış yapılırken bir hata oluştu.");
-      });
-  };
   useEffect(() => {
     const backAction = () => {
       if (navigation.isFocused()) { // Sadece bu ekran odaktaysa çalışır
@@ -47,7 +29,15 @@ const AdminDashboard = ({ navigation }) => {
   }, [navigation]);
 
   return (
+    
     <View style={styles.container}>
+      <Image
+              source={require("../assets/doctor.png")}
+              style={[
+                styles.icon,
+              , // Dinamik boyutlandırma
+              ]}
+            />
       <Text style={styles.title}>Doktor Sayfası</Text>
       <TouchableOpacity
         style={styles.button}
@@ -73,12 +63,7 @@ const AdminDashboard = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Tahlil Listeleme</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.logoutButton}
-        onPress={() => handleLogout(navigation)}
-      >
-        <Text style={styles.logoutButtonText}>Çıkış Yap</Text>
-      </TouchableOpacity>
+      
       
     </View>
   );
@@ -131,6 +116,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     textDecorationLine: "underline",
   },
+  icon: {
+  resizeMode: "contain",
+  marginBottom: 20,
+  padding: 10,
+  },
 });
 
 export default AdminDashboard;

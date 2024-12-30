@@ -12,7 +12,7 @@ const firebaseConfig = {
   measurementId: "***REMOVED***"
 };
 
-// Initialize Firebase
+// Firebase Bağlantısı
 const app = initializeApp(firebaseConfig);
 const analytics = getAnalytics(app);
  const auth = getAuth(app);

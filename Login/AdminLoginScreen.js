@@ -9,8 +9,8 @@ import {
 } from "react-native";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from "../firebase"; // Firestore bağlantısı kontrol edin
-
+import { auth, db } from "../firebase"; 
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 const AdminLoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -28,7 +28,10 @@ const AdminLoginScreen = ({ navigation }) => {
       if (docSnap.exists() && docSnap.data().role === "admin") {
         // Admin rolüne sahipse admin paneline yönlendir
         Alert.alert("Başarılı", "Admin olarak giriş yaptınız!");
-        navigation.navigate("AdminDashboard"); // Admin paneline yönlendirme
+        navigation.reset({
+          index: 0,
+          routes: [{ name: "AdminDashboard" }], 
+        }); // Admin paneline yönlendirme
       } else {
         // Admin rolüne sahip değilse hata göster
         Alert.alert("Hata", "Bu kullanıcı admin yetkisine sahip değil!");
@@ -56,13 +59,14 @@ const AdminLoginScreen = ({ navigation }) => {
         onChangeText={setPassword}
       />
       <TouchableOpacity style={styles.button} onPress={handleAdminLogin}>
-        <Text style={styles.buttonText}>Giriş Yap</Text>
+        <Text style={styles.buttonText}>Giriş Yap </Text><MaterialCommunityIcons name="login" size={24} color="white" />
       </TouchableOpacity>
       <TouchableOpacity
-        style={styles.switchButton}
+        style={styles.button}
         onPress={() => navigation.navigate("UserLogin")} // Kullanıcı girişine yönlendirme
       >
-        <Text style={styles.switchButtonText}>Kullanıcı Girişi</Text>
+        <Text style={styles.buttonText}>Hasta Girişi</Text>
+        <MaterialCommunityIcons name="emoticon-sick-outline" size={24} color="white" />
       </TouchableOpacity>
     </View>
   );

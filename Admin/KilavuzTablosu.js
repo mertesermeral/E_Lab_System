@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, TextInput, Button, StyleSheet, FlatList, Alert, Modal, ScrollView,TouchableOpacity} from "react-native";
+import { View, Text, TextInput, StyleSheet, FlatList, Alert, Modal, ScrollView,TouchableOpacity} from "react-native";
 import { db } from "../firebase";
 import { doc, getDoc, updateDoc, deleteDoc } from "firebase/firestore";
 const KilavuzTablosu = ({ route, navigation }) => {
@@ -166,7 +166,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
         </View>
       </ScrollView>
 
-      {/* Modal Düzenleme Ekranı */}
+      
       {isEditing && (
         <Modal
           visible={isEditing}

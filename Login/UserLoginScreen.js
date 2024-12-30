@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
-
+import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 const LoginScreen = ({navigation}) => {
   const [tc, setTc] = useState("");
   const [password, setPassword] = useState("");
@@ -20,7 +20,11 @@ const LoginScreen = ({navigation}) => {
       const email = `${tc}@elab.com`; // TC kimlik numarasını email formatına çeviriyoruz
       await signInWithEmailAndPassword(auth, email, password);
       Alert.alert("Başarılı", "Giriş başarılı!");
-      navigation.navigate("UserTahlilList"); // Kullanıcı için yönlendirme
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "UserTahlilList" }],
+      });
+      
     } catch (error) {
       console.error("Hata:", error);
       Alert.alert("Hata", "Giriş başarısız! TC veya şifre yanlış.");
@@ -41,7 +45,7 @@ const LoginScreen = ({navigation}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>{isRegistering ? "E-Laboratuvar Kayıt" : "E-Laboratuvar Giriş"}</Text>
+      <Text style={styles.title}>{isRegistering ? "Hasta Kayıt" : "Hasta Giriş"}</Text>
       <TextInput
         style={styles.input}
         maxLength={11}
@@ -58,7 +62,7 @@ const LoginScreen = ({navigation}) => {
         onChangeText={setPassword}
       />
       <TouchableOpacity style={styles.button} onPress={isRegistering ? handleRegister : handleLogin}>
-        <Text style={styles.buttonText}>{isRegistering ? "Kayıt Ol" : "Giriş Yap"}</Text>
+        <Text style={styles.buttonText}>{isRegistering ? "Kayıt Ol" : "Giriş Yap"}</Text><MaterialCommunityIcons name="login" size={24} color="white" />
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.switchButton}
@@ -79,16 +83,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     padding: 20,
     backgroundColor: "#f7f7f7", // Açık gri arka plan
-  },
-  logoContainer: {
-    alignItems: "center",
-    marginBottom: 40,
-  },
-  logo: {
-    width: 100,
-    height: 100, // Eğer bir logo kullanılacaksa
-    resizeMode: "contain",
-    marginBottom: 20,
   },
   title: {
     fontSize: 24,
@@ -120,21 +114,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  link: {
-    marginTop: 15,
-  },
-  linkText: {
-    color: "#0058a3", // Link rengi
-    fontSize: 14,
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-  },
-  errorText: {
-    color: "#dc143c", // Uyarı rengi
-    fontSize: 14,
-    textAlign: "center",
-    marginBottom: 15,
-  },
+  
 });
 
 export default LoginScreen;
