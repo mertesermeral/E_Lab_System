@@ -218,16 +218,16 @@ const Kilavuz = () => {
               style={styles.deleteButton}
               onPress={() => deleteRow(item.id)}
             >
-              <Text style={styles.deleteButtonText}>Sil</Text>
+              <Text style={styles.ButtonText}>Sil</Text>
             </TouchableOpacity>
           </View>
         )}
       />
       <TouchableOpacity style={styles.addButton} onPress={addRow}>
-        <Text style={styles.addButtonText}>Satır Ekle</Text>
+        <Text style={styles.ButtonText}>Satır Ekle</Text>
       </TouchableOpacity>
       <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-        <Text style={styles.saveButtonText}>Kılavuz Oluştur</Text>
+        <Text style={styles.ButtonText}>Kılavuz Oluştur</Text>
       </TouchableOpacity>
     </View>
   );
@@ -240,17 +240,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
+    color: "#0058a3", // Ana başlık rengi
     textAlign: "center",
+    marginBottom: 20,
   },
   input: {
+    width: "100%",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
+    backgroundColor: "#fff",
     padding: 10,
-    marginBottom: 10,
+    fontSize: 16,
+    marginBottom: 15,
   },
   row: {
     flexDirection: "column",
@@ -262,30 +266,23 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 10,
   },
-  deleteButtonText: {
-    color: "#fff",
-    textAlign: "center",
+  ButtonText: {
+  color: "#fff",
+  textAlign: "center",
+  fontWeight: "bold",
   },
   addButton: {
-    backgroundColor: "#6200ee",
-    borderRadius: 8,
+    width: "100%",
+    backgroundColor: "#0058a3", // Ana buton rengi
     padding: 15,
-    marginBottom: 10,
-  },
-  addButtonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "bold",
+    borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 10,
   },
   saveButton: {
     backgroundColor: "green",
     borderRadius: 8,
     padding: 15,
-  },
-  saveButtonText: {
-    color: "#fff",
-    textAlign: "center",
-    fontWeight: "bold",
   },
 });
 

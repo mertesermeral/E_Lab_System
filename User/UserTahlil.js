@@ -357,7 +357,7 @@ serumContainer: {
       
 },
 backButton: {
-  backgroundColor: "#6200ee",
+  backgroundColor: "#0058a3",
   padding: 10,
   borderRadius: 8,
   marginTop: 20,

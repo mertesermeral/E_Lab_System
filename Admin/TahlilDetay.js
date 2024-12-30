@@ -349,10 +349,10 @@ scrollContainer: {
 },
 title: {
   fontSize: 28,
-    fontWeight: "bold",
-    color: "#0058a3", // Ana başlık rengi
-    textAlign: "center",
-    marginBottom: 20,
+  fontWeight: "bold",
+  color: "#0058a3", // Ana başlık rengi
+  textAlign: "center",
+  marginBottom: 20,
 },
 subTitle: {
   fontSize: 23,
@@ -384,7 +384,7 @@ serumContainer: {
       
 },
 backButton: {
-  backgroundColor: "#6200ee",
+  backgroundColor: "#0058a3",
   padding: 10,
   borderRadius: 8,
   marginTop: 20,

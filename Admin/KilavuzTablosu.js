@@ -125,7 +125,7 @@ const KilavuzTablosu = ({ route, navigation }) => {
       <ScrollView horizontal style={styles.scrollView}>
         <View style={styles.table}>
           
-          <View style={styles.tableRow}>
+          <View style={styles.tableRowHeader}>
             <Text style={styles.headerCell}>Yaş (Ay)</Text>
             <Text style={styles.headerCell}>Geo Mean</Text>
             <Text style={styles.headerCell}>Mean</Text>
@@ -291,27 +291,39 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
+    color: "#0058a3", // Ana başlık rengi
     textAlign: "center",
+    marginBottom: 20,
   },
   table: {
     flexDirection: "column",
     flex: 1,
   },
+  tableRowHeader: {
+    flexDirection: "row",
+    backgroundColor: "#0058a3", // Tablo başlık arka plan rengi
+    paddingVertical: 8,
+    borderRadius: 5,
+  },
   tableRow: {
     flexDirection: "row",
-    padding: 10,
     borderBottomWidth: 1,
     borderColor: "#ccc",
+    paddingVertical: 8,
   },
   headerCell: {
     width: 100,
     fontWeight: "bold",
     textAlign: "center",
     padding: 5,
-    backgroundColor: "#f0f0f0",
+    backgroundColor: "#0058a3",
+    flex: 1,
+    fontWeight: "bold",
+    textAlign: "center",
+    fontSize: 14,
+    color: "#fff",
   },
   cell: {
     width: 100,
@@ -360,13 +372,13 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   saveButton: {
-    backgroundColor: "blue",
     paddingVertical: 10,
     borderRadius: 8,
     padding: 15,
     margin: 4,
     width: "auto",
     alignSelf: "center",
+    backgroundColor: "#0058a3",
   },
   ButtonText: {
     color: "#fff",
@@ -374,12 +386,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
    searchInput: {
-    height: 40,
-    borderColor: "#ccc",
+    width: "100%",
     borderWidth: 1,
+    borderColor: "#ccc",
     borderRadius: 8,
-    paddingHorizontal: 10,
-    marginBottom: 20,
+    backgroundColor: "#fff",
+    padding: 10,
+    fontSize: 16,
+    marginBottom: 15,
   },
   deleteButton: {
     backgroundColor: "red",

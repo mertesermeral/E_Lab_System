@@ -104,12 +104,12 @@ const App = () => {
       <Stack.Screen
           name="TahlilList"
           component={TahlilList}
-          options={{ title: "Tahliller Listesi" }}
+          options={{ title: "Tahlil Listesi" }}
         />
       <Stack.Screen
           name="TahlilDetay"
           component={TahlilDetay}
-          options={{ title: "Tahlil" }}
+          options={{ title: "Tahlil Detayı" }}
         />
       </Stack.Navigator>
     </NavigationContainer>

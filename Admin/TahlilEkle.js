@@ -123,13 +123,14 @@ const TahlilEkle = () => {
     >
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <Text style={styles.title}>Tahlil Ekle</Text>
-
+        <View style={styles.box}>
         <TextInput
           style={styles.input}
           placeholder="Adı Soyadı"
           value={formData.fullName}
           onChangeText={(value) => handleInputChange("fullName", value)}
         />
+        </View>
         <TextInput
           style={styles.input}
           maxLength={11}
@@ -208,8 +209,8 @@ const TahlilEkle = () => {
           onChangeText={(value) => setNewSerumValue(value)}
         />
 
-        <TouchableOpacity style={styles.saveButton} onPress={handleAddSerumValue}>
-          <Text style={styles.saveButtonText}>Serum Değeri Ekle</Text>
+        <TouchableOpacity style={styles.addButton} onPress={handleAddSerumValue}>
+          <Text style={styles.ButtonText}>Serum Değeri Ekle</Text>
         </TouchableOpacity>
 
         {formData.serumTypes.length > 0 && (
@@ -223,7 +224,7 @@ const TahlilEkle = () => {
         )}
 
         <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
-          <Text style={styles.saveButtonText}>Kaydet</Text>
+          <Text style={styles.ButtonText}>Kaydet</Text>
         </TouchableOpacity>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -240,17 +241,21 @@ const styles = StyleSheet.create({
     paddingBottom: 30, // Kaydet butonunun altının görünmesini sağlar
   },
   title: {
-    fontSize: 24,
+    fontSize: 28,
     fontWeight: "bold",
-    marginBottom: 20,
+    color: "#0058a3", // Ana başlık rengi
     textAlign: "center",
+    marginBottom: 20,
   },
   input: {
+    width: "100%",
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
+    backgroundColor: "#fff",
     padding: 10,
-    marginBottom: 10,
+    fontSize: 16,
+    marginBottom: 15,
   },
   datePicker: {
     borderWidth: 1,
@@ -267,13 +272,20 @@ const styles = StyleSheet.create({
     fontSize: 16,
     marginBottom: 10,
   },
+  addButton: {
+    width: "100%",
+    backgroundColor: "#0058a3", // Ana buton rengi
+    padding: 15,
+    borderRadius: 8,
+    alignItems: "center",
+    marginVertical: 10,
+  },
   saveButton: {
     backgroundColor: "green",
     borderRadius: 8,
     padding: 15,
-    marginTop: 10,
   },
-  saveButtonText: {
+  ButtonText: {
     color: "#fff",
     textAlign: "center",
     fontWeight: "bold",
