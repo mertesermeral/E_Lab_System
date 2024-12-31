@@ -35,7 +35,6 @@ const AdminDashboard = ({ navigation }) => {
               source={require("../assets/doctor.png")}
               style={[
                 styles.icon,
-              , // Dinamik boyutlandırma
               ]}
             />
       <Text style={styles.title}>Doktor Sayfası</Text>
@@ -84,16 +83,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 30,
   },
-  input: {
-    width: "100%",
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    backgroundColor: "#fff",
-    padding: 15,
-    fontSize: 16,
-    marginBottom: 20,
-  },
   button: {
     width: "100%",
     backgroundColor: "#0058a3", // Ana buton rengi
@@ -107,15 +96,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
-  switchButton: {
-    marginTop: 15,
-  },
-  switchButtonText: {
-    color: "#0058a3", // Link rengi
-    fontSize: 14,
-    fontWeight: "bold",
-    textDecorationLine: "underline",
-  },
   icon: {
   resizeMode: "contain",
   marginBottom: 20,

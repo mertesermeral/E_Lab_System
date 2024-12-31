@@ -8,7 +8,7 @@ import {
   StyleSheet,
   Alert,
 } from "react-native";
-import { Picker } from "@react-native-picker/picker"; // Picker bileşeni
+import { Picker } from "@react-native-picker/picker";
 import { db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
 

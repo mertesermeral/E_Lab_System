@@ -343,11 +343,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginBottom: 5,
   },
-  button: {
-    marginTop: 10,
-    justifyContent: "center",
-    alignItems: "center",
-  },
   modalContainer: {
     flex: 1,
     padding: 2,

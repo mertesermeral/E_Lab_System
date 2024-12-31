@@ -379,9 +379,7 @@ serumContainer: {
   backgroundColor: "#0058a3", // Ana buton rengi
   padding: "auto",
   borderRadius: 8,
-  alignItems: "center",
-  
-      
+  alignItems: "center",       
 },
 backButton: {
   backgroundColor: "#0058a3",
