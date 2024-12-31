@@ -14,6 +14,7 @@ import TahlilList from "./Admin/TahlilList";
 import TahlilDetay from "./Admin/TahlilDetay";
 import UserTahlil from "./User/UserTahlil";
 import UserTahlilList from "./User/UserTahlilList";
+import UserProfile from "./User/UserProfile";
 import Header from "./Header";
 import MaterialCommunityIcons from '@expo/vector-icons/MaterialCommunityIcons';
 const Stack = createStackNavigator();
@@ -53,15 +54,15 @@ const HomeScreen = ({ navigation }) => {
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator
-        initialRouteName="Home"
-        screenOptions={({ route, navigation }) => ({
-          header: () =>
-            ["Home", "AdminLogin", "UserLogin"].includes(route.name) ? null : (
-              <Header navigation={navigation} />
-            ),
-        })}
-      >
+        <Stack.Navigator
+          initialRouteName="Home"
+          screenOptions={({ route, navigation }) => ({
+            header: () =>
+              ["Home", "AdminLogin", "UserLogin"].includes(route.name) ? null : (
+                <Header navigation={navigation} routeName={route.name} />
+              ),
+          })}
+        >
         <Stack.Screen
           name="Home"
           component={HomeScreen}
@@ -127,6 +128,12 @@ const App = () => {
           component={TahlilDetay}
           options={{ title: "Tahlil Detayı" }}
         />
+        <Stack.Screen
+          name="UserProfile"
+          component={UserProfile}
+          options={{ title: "Profil Yönetimi" }}
+        />
+        
       </Stack.Navigator>
     </NavigationContainer>
   );

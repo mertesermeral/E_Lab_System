@@ -72,7 +72,9 @@ const UserTahlilList = ({ navigation }) => {
         source={require("../assets/patient.png")}
         style={[styles.icon, { width: "100%", height: "30%" }]}
       />
+      
       <Text style={styles.title}>Tahlil Listesi</Text>
+      
       <Text style={styles.welcomeText}>
         Hoşgeldiniz, <Text style={styles.userName}>{userName}</Text>
       </Text>
@@ -94,6 +96,7 @@ const UserTahlilList = ({ navigation }) => {
       ) : (
         <Text style={styles.noData}>Yükleniyor...</Text>
       )}
+             
     </View>
   );
 };
