@@ -7,6 +7,7 @@ import Kilavuz from "./Kilavuz";
 import KilavuzList from "./KilavuzList";
 import TahlilEkle from "./TahlilEkle";
 import TahlilList from "./TahlilList";
+import { useFocusEffect } from "@react-navigation/native"; // Sayfa odaklandığında sıfırlama için
 
 const Drawer = createDrawerNavigator();
 
@@ -66,14 +67,14 @@ const DashboardHome = ({navigation}) => {
   const [age, setAge] = useState(0);
   const [serumValues, setSerumValues] = useState({
     IgG: "",
-    IgA: "",
-    IgM: "",
     IgG1: "",
     IgG2: "",
     IgG3: "",
     IgG4: "",
+    IgA: "",
     IgA1: "",
     IgA2: "",
+    IgM: "",
   });
   const [guides, setGuides] = useState([]);
   const [evaluationResults, setEvaluationResults] = useState([]);
@@ -92,7 +93,24 @@ const DashboardHome = ({navigation}) => {
 
     fetchGuides();
   }, []);
-
+  useFocusEffect(
+    React.useCallback(() => {
+      setBirthDate("");
+      setAge(0);
+      setSerumValues({
+        IgG: "",
+        IgG1: "",
+        IgG2: "",
+        IgG3: "",
+        IgG4: "",
+        IgA: "",
+        IgA1: "",
+        IgA2: "",
+        IgM: "",
+      });
+      setEvaluationResults([]);
+    }, [])
+  );
   const calculateAgeInMonths = (birthDateStr) => {
     const parts = birthDateStr.split("/");
     if (parts.length !== 3) return 0;
@@ -191,18 +209,19 @@ const DashboardHome = ({navigation}) => {
       <Text style={styles.ageDisplay}>Yaş (Ay): {age}</Text>
 
       <Text style={styles.subTitle}>Serum Değerleri:</Text>
-      {Object.keys(serumValues).map((serumType) => (
-        <TextInput
-          key={serumType}
-          style={styles.input}
-          placeholder={`${serumType} Değeri`}
-          keyboardType="numeric"
-          value={serumValues[serumType]}
-          onChangeText={(value) =>
-            setSerumValues((prev) => ({ ...prev, [serumType]: value }))
-          }
-        />
-      ))}
+      <View style={styles.inputGrid}>
+        {Object.keys(serumValues).map((serumType) => (
+          <View key={serumType} style={styles.inputWrapper}>
+            <TextInput
+              style={styles.inputSmall}
+              placeholder={`${serumType}`}
+              keyboardType="numeric"
+              value={serumValues[serumType]}
+              onChangeText={(value) => setSerumValues((prev) => ({ ...prev, [serumType]: value }))}
+            />
+          </View>
+        ))}
+      </View>
 
       <TouchableOpacity style={styles.evaluateButton} onPress={handleEvaluate}>
         <Text style={styles.ButtonText}>Değerlendir</Text>
@@ -369,6 +388,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: "#333",
   },
+  input: { borderWidth: 1, borderColor: "#ccc", padding: 10, marginBottom: 10, borderRadius: 8 },
+  inputGrid: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+  },
+  inputWrapper: {
+    width: "48%", // 2 sütun düzeni
+    marginBottom: 10,
+  },
+  inputSmall: { borderWidth: 1, borderColor: "#ccc", padding: 8, borderRadius: 8 },
 });
 
 export default AdminDashboard;
