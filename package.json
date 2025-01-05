@@ -39,7 +39,6 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
-    "@babel/plugin-transform-private-methods": "^7.25.9",
     "@react-native/babel-preset": "^0.76.5",
     "metro-react-native-babel-preset": "^0.77.0"
   },
