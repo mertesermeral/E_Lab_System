@@ -1,12 +1,18 @@
 import React, { useEffect } from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Alert, BackHandler, Image} from "react-native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import { View, Text, StyleSheet, TouchableOpacity, Image, Alert, BackHandler } from "react-native";
+import Kilavuz from "./Kilavuz";
+import KilavuzList from "./KilavuzList";
+import TahlilEkle from "./TahlilEkle";
+import TahlilList from "./TahlilList";
 
+const Drawer = createDrawerNavigator();
 
-const AdminDashboard = ({ navigation }) => {
-  
+const DashboardHome = ({ navigation }) => {
+  // Geri tuşu kontrolü
   useEffect(() => {
     const backAction = () => {
-      if (navigation.isFocused()) { // Sadece bu ekran odaktaysa çalışır
+      if (navigation.isFocused()) { // Yalnızca bu sayfa odaklıysa
         Alert.alert("Uyarı", "Oturumdan çıkmak istiyor musunuz?", [
           {
             text: "Hayır",
@@ -15,28 +21,22 @@ const AdminDashboard = ({ navigation }) => {
           },
           {
             text: "Evet",
-            onPress: () => navigation.replace("Home")
+            onPress: () => navigation.replace("Home"),
           },
         ]);
-        return true;
+        return true; // İşlemi engelle
       }
-      return false; // Alt sayfalarda varsayılan davranışı koru
+      return false; // Diğer ekranlarda varsayılan davranış
     };
 
     const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
-    return () => backHandler.remove();
+    return () => backHandler.remove(); // Bileşen unmount olunca listener'ı kaldır
   }, [navigation]);
 
   return (
-    
     <View style={styles.container}>
-      <Image
-              source={require("../assets/doctor.png")}
-              style={[
-                styles.icon,
-              ]}
-            />
+      <Image source={require("../assets/doctor.png")} style={styles.icon} />
       <Text style={styles.title}>Doktor Sayfası</Text>
       <TouchableOpacity
         style={styles.button}
@@ -62,9 +62,44 @@ const AdminDashboard = ({ navigation }) => {
       >
         <Text style={styles.buttonText}>Tahlil Listeleme</Text>
       </TouchableOpacity>
-      
-      
     </View>
+  );
+};
+
+const AdminDashboard = () => {
+  return (
+    <Drawer.Navigator
+      initialRouteName="Ana Sayfa"
+      screenOptions={{
+        drawerStyle: { width: 240, backgroundColor: "#f7f7f7" },
+      }}
+    >
+      <Drawer.Screen
+        name="Ana Sayfa"
+        component={DashboardHome}
+        options={{ headerShown: true }}
+      />
+      <Drawer.Screen
+        name="Kılavuz Oluşturma"
+        component={Kilavuz}
+        options={{ title: "Kılavuz Oluştur" }}
+      />
+      <Drawer.Screen
+        name="Kılavuz Listeleme"
+        component={KilavuzList}
+        options={{ title: "Kılavuz Listesi" }}
+      />
+      <Drawer.Screen
+        name="Tahlil Ekle"
+        component={TahlilEkle}
+        options={{ title: "Tahlil Ekle" }}
+      />
+      <Drawer.Screen
+        name="Tahlil Listeleme"
+        component={TahlilList}
+        options={{ title: "Tahlil Listesi" }}
+      />
+    </Drawer.Navigator>
   );
 };
 
@@ -74,18 +109,18 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
-    backgroundColor: "#f7f7f7", // Açık gri arka plan
+    backgroundColor: "#f7f7f7",
   },
   title: {
     fontSize: 28,
     fontWeight: "bold",
-    color: "#0058a3", // Ana renk
+    color: "#0058a3",
     textAlign: "center",
     marginBottom: 30,
   },
   button: {
     width: "100%",
-    backgroundColor: "#0058a3", // Ana buton rengi
+    backgroundColor: "#0058a3",
     padding: 15,
     borderRadius: 8,
     alignItems: "center",
@@ -97,9 +132,9 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   icon: {
-  resizeMode: "contain",
-  marginBottom: 20,
-  padding: 10,
+    resizeMode: "contain",
+    marginBottom: 20,
+    padding: 10,
   },
 });
 
