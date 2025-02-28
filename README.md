@@ -1,7 +1,3 @@
-**2024 – 2025 GÜZ DÖNEMİ** <br>
-**Mobil Uygulama Geliştirme Proje Ödevi** <br>
-G211210047 - Mert Eser Meral <br>
-G211210011 - Zehra Bak <br>
 #E-LABORATUVAR SİSTEMİ <br>
 ## **Kullanıcı Tarafı**  
 - Geçmiş tahliller listelenebilir ve detaylı olarak görüntülenebilir.  
