@@ -25,19 +25,19 @@ const getArrowWithAlignment = (rangeText, arrow) => {
   switch (arrow) {
     case "↓":
       return (
-        <Text style={{ color: "green", fontWeight: "bold" }}>
+        <Text style={{ color: "red", fontWeight: "bold" }}>
           {arrow} {rangeText}
         </Text>
       );
     case "↔":
       return (
-        <Text style={{  color: "blue", fontWeight: "bold" }}>
+        <Text style={{  color: "green", fontWeight: "bold" }}>
           {min.trim()} {arrow} {max.trim()}
         </Text>
       );
     case "↑":
       return (
-        <Text style={{  color: "red", fontWeight: "bold" }}>
+        <Text style={{  color: "blue", fontWeight: "bold" }}>
           {rangeText} {arrow}
         </Text>
       );
